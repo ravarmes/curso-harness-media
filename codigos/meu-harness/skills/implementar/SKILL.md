@@ -16,6 +16,7 @@ conversa e marque cada item ao concluí-lo:
 - [ ] Fatia 1: teste falhando → código → verificação passando → commit
 - [ ] Fatia 2: ...
 - [ ] Revisão
+- [ ] Verificação de comportamento
 - [ ] Relatório final
 ```
 
@@ -42,7 +43,13 @@ conversa e marque cada item ao concluí-lo:
    de base. Corrija o que ele marcar como **bloqueia**, rode a verificação e
    despache-o de novo. Se depois da segunda revisão ainda houver bloqueio,
    pare e mostre os achados ao usuário.
-3. Relate: a saída da verificação, o veredito do revisor e, para cada
-   critério de aceite, o teste que o cobre. Achados de melhoria vão no
-   relatório, sem correção. Se algum critério ficou sem teste, ou se algo da
-   especificação não foi feito, diga isso claramente em vez de dizer "pronto".
+3. Despache o subagente `verificador` com o nome da especificação (o arquivo,
+   sem pasta nem extensão, como `bloqueio-por-faltas`). Se ele reprovar um critério,
+   trate como defeito: escreva um teste que reproduza o que ele observou,
+   corrija, verifique e despache-o de novo. Se depois da segunda verificação
+   ainda houver critério reprovado, pare e mostre o relatório ao usuário.
+4. Relate: a saída da verificação, os vereditos do revisor e do verificador
+   e, para cada critério de aceite, o teste que o cobre. Achados de melhoria
+   vão no relatório, sem correção. Se algum critério ficou sem teste, ou se
+   algo da especificação não foi feito, diga isso claramente em vez de dizer
+   "pronto".
