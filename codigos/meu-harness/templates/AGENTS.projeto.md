@@ -1,6 +1,7 @@
 # [Nome do projeto]
 
 ## Comandos
+- Na primeira vez: `[como preparar o projeto]` ([versão mínima do que precisa estar instalado]).
 - `[comando]`: [o que faz]
 - `[comando de verificação]`: rode antes de dizer que terminou.
 
