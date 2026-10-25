@@ -2,6 +2,7 @@ import type { DatabaseSync } from 'node:sqlite';
 import { criarRepositorioAgenda } from './repositorio.ts';
 import type { Contexto } from './agendar-consulta/agendar-consulta.ts';
 import { rotaAgendarConsulta } from './agendar-consulta/rota.ts';
+import { rotaCancelarConsulta } from './cancelar-consulta/rota.ts';
 import { rotaObterAgendaDoDia } from './obter-agenda-do-dia/rota.ts';
 
 // A agenda pergunta a pacientes e profissionais pelo index.ts deles.
@@ -19,5 +20,5 @@ export function agenda(
     profissionalExiste: outros.profissionais.existe,
     expedienteDe: outros.profissionais.expediente,
   };
-  return { rotas: [rotaAgendarConsulta(ctx), rotaObterAgendaDoDia(ctx)] };
+  return { rotas: [rotaAgendarConsulta(ctx), rotaCancelarConsulta(ctx), rotaObterAgendaDoDia(ctx)] };
 }
