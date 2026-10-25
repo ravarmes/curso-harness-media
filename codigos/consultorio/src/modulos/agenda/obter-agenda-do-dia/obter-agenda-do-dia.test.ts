@@ -58,6 +58,20 @@ test('id ou data malformados são malformado', () => {
   }
 });
 
+test('o dia é o de Brasília: 21h30 entra no próprio dia e 00h30 não vem do dia anterior', () => {
+  const { ctx, marcar } = novoCenario();
+  marcar(1, 1, '2026-11-10T21:30:00-03:00', '2026-11-10T22:00:00-03:00');
+  marcar(2, 1, '2026-11-11T00:30:00-03:00', '2026-11-11T01:00:00-03:00');
+  marcar(3, 1, '2026-11-10T00:30:00-03:00', '2026-11-10T01:00:00-03:00');
+  const ids = (data: string) => {
+    const r = obterAgendaDoDia(ctx, '1', data);
+    assert.ok(r.ok);
+    return r.agenda.consultas.map((c) => c.id);
+  };
+  assert.deepEqual(ids('2026-11-10'), [3, 1]);
+  assert.deepEqual(ids('2026-11-11'), [2]);
+});
+
 test('a consulta cancelada não aparece na agenda do dia', () => {
   const { ctx, marcar } = novoCenario();
   marcar(1, 1, '2026-11-10T09:00:00-03:00', '2026-11-10T10:00:00-03:00');

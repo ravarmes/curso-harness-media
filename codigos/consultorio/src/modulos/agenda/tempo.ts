@@ -25,7 +25,7 @@ export function lerInstante(valor: unknown): number | undefined {
 export function inicioDoDia(data: unknown): number | undefined {
   const m = typeof data === 'string' ? /^(\d{4})-(\d{2})-(\d{2})$/.exec(data) : null;
   if (!m || !dataValida(Number(m[1]), Number(m[2]), Number(m[3]))) return undefined;
-  return Date.parse(`${data}T00:00:00Z`);
+  return Date.parse(`${data}T00:00:00-03:00`);
 }
 
 // Dia de Brasília que contém o instante: quando começa e o dia da semana (0 = segunda).
