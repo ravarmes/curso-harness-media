@@ -1,7 +1,7 @@
 import type { DatabaseSync } from 'node:sqlite';
 
 // Instantes em UTC, no formato de toISOString(), que ordena como texto.
-export type Consulta = { id: number; paciente_id: number; profissional_id: number; inicio_utc: string; fim_utc: string };
+export type Consulta = { id: number; paciente_id: number; profissional_id: number; inicio_utc: string; fim_utc: string; status: 'agendada' | 'cancelada' };
 
 export function criarRepositorioAgenda(banco: DatabaseSync) {
   banco.exec(`
@@ -15,18 +15,22 @@ export function criarRepositorioAgenda(banco: DatabaseSync) {
     CREATE INDEX IF NOT EXISTS idx_consultas_profissional ON consultas (profissional_id, inicio_utc);
     CREATE INDEX IF NOT EXISTS idx_consultas_paciente ON consultas (paciente_id, inicio_utc);
   `);
+  // Bancos criados antes do cancelamento não têm a coluna.
+  if (!banco.prepare('PRAGMA table_info(consultas)').all().some((c) => c.name === 'status')) {
+    banco.exec("ALTER TABLE consultas ADD COLUMN status TEXT NOT NULL DEFAULT 'agendada'");
+  }
   // Intervalos [inicio, fim): consulta que começa quando outra termina não se sobrepõe.
   const sobrepoe = (coluna: 'profissional_id' | 'paciente_id') =>
-    banco.prepare(`SELECT 1 FROM consultas WHERE ${coluna} = ? AND inicio_utc < ? AND fim_utc > ? LIMIT 1`);
+    banco.prepare(`SELECT 1 FROM consultas WHERE ${coluna} = ? AND status = 'agendada' AND inicio_utc < ? AND fim_utc > ? LIMIT 1`);
   const doProfissional = sobrepoe('profissional_id');
   const doPaciente = sobrepoe('paciente_id');
   return {
     // O node:sqlite é síncrono: conferir e inserir, sem await no meio, não deixa outro pedido passar.
-    inserir(dados: Omit<Consulta, 'id'>): Consulta {
+    inserir(dados: Omit<Consulta, 'id' | 'status'>): Consulta {
       const { lastInsertRowid } = banco
         .prepare('INSERT INTO consultas (paciente_id, profissional_id, inicio_utc, fim_utc) VALUES (?, ?, ?, ?)')
         .run(dados.paciente_id, dados.profissional_id, dados.inicio_utc, dados.fim_utc);
-      return { id: Number(lastInsertRowid), ...dados };
+      return { id: Number(lastInsertRowid), ...dados, status: 'agendada' };
     },
     profissionalOcupado(id: number, inicioUtc: string, fimUtc: string): boolean {
       return doProfissional.get(id, fimUtc, inicioUtc) !== undefined;
@@ -34,11 +38,18 @@ export function criarRepositorioAgenda(banco: DatabaseSync) {
     pacienteOcupado(id: number, inicioUtc: string, fimUtc: string): boolean {
       return doPaciente.get(id, fimUtc, inicioUtc) !== undefined;
     },
+    porId(id: number): Consulta | undefined {
+      const linha = banco.prepare('SELECT * FROM consultas WHERE id = ?').get(id);
+      return linha && ({ ...linha } as Consulta);
+    },
+    cancelar(id: number): void {
+      banco.prepare("UPDATE consultas SET status = 'cancelada' WHERE id = ?").run(id);
+    },
     // Consultas que começam em [deDeUtc, ateUtc), em ordem.
     doProfissionalNoPeriodo(id: number, deUtc: string, ateUtc: string): Consulta[] {
       return banco
         .prepare(
-          `SELECT * FROM consultas WHERE profissional_id = ? AND inicio_utc >= ? AND inicio_utc < ?
+          `SELECT * FROM consultas WHERE profissional_id = ? AND status = 'agendada' AND inicio_utc >= ? AND inicio_utc < ?
            ORDER BY inicio_utc, id`,
         )
         .all(id, deUtc, ateUtc)

@@ -5,6 +5,7 @@ import { diaDe, lerInstante, MINUTO_MS, paraBrasilia, paraUtc } from '../tempo.t
 // O que a agenda precisa saber dos outros módulos (vem dos index.ts deles).
 export type Contexto = {
   repo: RepositorioAgenda;
+  agora: () => number; // ms UTC; injetável para os testes
   pacienteExiste: (id: number) => boolean;
   profissionalExiste: (id: number) => boolean;
   expedienteDe: (profissionalId: number) => { dia_semana: number; inicio_min: number; fim_min: number }[];

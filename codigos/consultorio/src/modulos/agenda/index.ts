@@ -14,6 +14,7 @@ export function agenda(
 ) {
   const ctx: Contexto = {
     repo: criarRepositorioAgenda(banco),
+    agora: Date.now,
     pacienteExiste: outros.pacientes.existe,
     profissionalExiste: outros.profissionais.existe,
     expedienteDe: outros.profissionais.expediente,

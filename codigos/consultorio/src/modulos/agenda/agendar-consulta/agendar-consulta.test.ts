@@ -8,6 +8,7 @@ import { agendarConsulta, type Contexto } from './agendar-consulta.ts';
 function novoCenario() {
   const ctx: Contexto = {
     repo: criarRepositorioAgenda(new DatabaseSync(':memory:')),
+    agora: () => Date.now(),
     pacienteExiste: (id) => id === 1 || id === 2,
     profissionalExiste: (id) => id === 1 || id === 2,
     expedienteDe: (id) =>
@@ -141,4 +142,13 @@ test('consulta recusada não fica gravada', () => {
   const ctx = novoCenario();
   recusa(agendarConsulta(ctx, pedido('2026-11-10T20:00:00-03:00', '2026-11-10T21:00:00-03:00')), 'recusado');
   assert.deepEqual(ctx.repo.doProfissionalNoPeriodo(1, '2026-11-01T00:00:00.000Z', '2026-12-01T00:00:00.000Z'), []);
+});
+
+test('consulta cancelada libera o horário do profissional e do paciente', () => {
+  const ctx = novoCenario();
+  const primeira = agendarConsulta(ctx, pedido('2026-11-10T09:00:00-03:00', '2026-11-10T10:00:00-03:00'));
+  assert.ok(primeira.ok);
+  ctx.repo.cancelar(primeira.consulta.id);
+  assert.ok(agendarConsulta(ctx, pedido('2026-11-10T09:00:00-03:00', '2026-11-10T10:00:00-03:00', 2)).ok); // mesmo profissional
+  assert.ok(agendarConsulta(ctx, pedido('2026-11-10T09:00:00-03:00', '2026-11-10T10:00:00-03:00', 1, 2)).ok); // mesmo paciente
 });

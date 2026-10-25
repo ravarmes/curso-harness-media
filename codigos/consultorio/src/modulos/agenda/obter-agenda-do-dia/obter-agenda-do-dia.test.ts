@@ -13,6 +13,7 @@ function novoCenario() {
     pacienteExiste: (id) => id > 0 && id < 10,
     profissionalExiste: (id) => id === 1 || id === 2,
     expedienteDe: () => todoDia,
+    agora: () => Date.now(),
   };
   const marcar = (paciente_id: number, profissional_id: number, inicio: string, fim: string) =>
     assert.ok(agendarConsulta(ctx, { paciente_id, profissional_id, inicio, fim }).ok);
@@ -68,4 +69,14 @@ test('id ou data malformados são malformado', () => {
     const r = obterAgendaDoDia(ctx, id, data);
     assert.ok(!r.ok && r.erro.tipo === 'malformado', `${id} ${data}`);
   }
+});
+
+test('a consulta cancelada não aparece na agenda do dia', () => {
+  const { ctx, marcar } = novoCenario();
+  marcar(1, 1, '2026-11-10T09:00:00-03:00', '2026-11-10T10:00:00-03:00');
+  marcar(2, 1, '2026-11-10T11:00:00-03:00', '2026-11-10T12:00:00-03:00');
+  ctx.repo.cancelar(1);
+  const r = obterAgendaDoDia(ctx, '1', '2026-11-10');
+  assert.ok(r.ok);
+  assert.deepEqual(r.agenda.consultas.map((c) => c.id), [2]);
 });
