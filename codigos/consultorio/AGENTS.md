@@ -6,6 +6,9 @@
 - `npm run dev`: sobe a API em http://localhost:3000 e reinicia ao salvar.
 - `npm run verify`: tipos, testes e teste de arquitetura. Rode antes de
   dizer que terminou e mostre a saída.
+- `npm run provedor`: sobe o provedor falso de WhatsApp em
+  http://127.0.0.1:4010. Ele lê o `WHATSAPP_TOKEN` do `.env`, que não vai
+  para o Git; as variáveis estão no `.env.exemplo`.
 
 ## Arquitetura
 
