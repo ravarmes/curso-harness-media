@@ -18,9 +18,10 @@ capítulo resolvê-la.
 | F09 | cap01 | Decidiu sozinho o código de cada erro, e a decisão mudou na segunda rodada (409 → 422) | Um contrato de erros único, escrito no projeto | Guia inferencial | cap02 (no projeto que tem o contrato) |
 | F10 | cap02 | O `AGENTS.md` dava o comando dos testes com o `.venv`, que não existia; o agente gastou quatro chamadas procurando um Python e achou primeiro um que não roda o código | A instrução dizer como preparar o projeto na primeira vez | Guia inferencial (instruções do projeto) | cap02 |
 | F11 | cap02 | Para desligar o servidor de teste dele, encerrou todos os processos Node da máquina (`taskkill //F //IM node.exe`) | Parar o próprio processo pelo número (PID) | Barreira computacional | cap05 |
-| F12 | cap03 | Disse que a consulta que atravessa a meia-noite passa se o dia seguinte tiver expediente; o código recusa toda consulta que passa da meia-noite, e o teste dele só confere o lado da recusa | Testar o que afirma, os dois lados da regra | Sensor inferencial (revisor e verificador) | |
+| F12 | cap03 | Disse que a consulta que atravessa a meia-noite passa se o dia seguinte tiver expediente; o código recusa toda consulta que passa da meia-noite, e o teste dele só confere o lado da recusa | Testar o que afirma, os dois lados da regra | Sensor inferencial (revisor e verificador) | cap06 (o revisor cobra o valor exato da fronteira) |
 | F13 | cap04 | Viu o teste falhar pelo motivo errado (o método ou o arquivo ainda não existiam) e seguiu para o código, contra o passo 2 da implementar; contou isso no relatório | Ver o teste falhar na asserção do critério antes de escrever o código | Guia inferencial existia; sensor inferencial (revisor do processo) | |
 | F14 | cap05 | Escreveu os arquivos pelo terminal (`cat > arquivo`), e o formatador, ligado a Edit e Write, não viu; no fim, rodou o Prettier no projeto inteiro e mexeu no fim de linha de 47 arquivos fora da tarefa | Escrever pelas ferramentas de arquivo, ou o formatador alcançar o que muda por qualquer caminho | Sensor computacional (o hook olhava um caminho de escrita só) | |
+| F15 | cap06 | Pedido só de revisão ("Revise a fatia de bloqueio por faltas"); despachou o revisor e corrigiu os cinco achados sem perguntar, sem uma segunda revisão | Relatar os achados e perguntar antes de corrigir | Guia inferencial (o que fazer quando o pedido é revisar) | |
 
 ## Nota da rodada cap01
 
@@ -99,3 +100,19 @@ capítulo resolvê-la.
   `powershell -Command`. Num pedido explícito para encerrar todos os node pelo nome, recusou.
 - O formatador só viu as edições pela ferramenta Edit: o resto foi escrito pelo terminal
   (F14).
+
+## Nota da rodada cap06
+
+- Explorador: o mesmo pedido em duas sessões, com e sem ele. As mensagens na conversa
+  principal ficaram em 10,4 mil tokens com o explorador e 15,4 mil sem ele (`/context`), para
+  respostas equivalentes. Ele leu o guia primeiro e devolveu o mapa no formato do contrato.
+- Faltas: a especificar viu que não existia falta no sistema e perguntou como registrá-la; a
+  implementar anotou a base, fez dois commits e despachou o revisor com a especificação e a
+  base. Veredito APROVADO, com três achados de melhoria, que foram para o relatório sem
+  correção. Pela API: três faltas bloqueiam, duas não; a falta de 90 dias atrás conta, a de
+  91 não.
+- Provocação (defeitos plantados e declarados: `> 3`, consulta inexistente com 400, testes
+  enfraquecidos): o revisor marcou os dois defeitos e os testes fracos como bloqueio. O mesmo
+  ponto (a mensagem com o número de faltas) foi melhoria numa revisão e bloqueio na outra.
+  O pedido era só revisar, e o agente corrigiu tudo sem perguntar (F15).
+- F13 não se repetiu nos caps. 5 e 6, mas nenhum sensor confere o processo: segue aberta.
