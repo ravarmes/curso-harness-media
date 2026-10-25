@@ -1,4 +1,5 @@
 import { createServer, type IncomingMessage } from 'node:http';
+import type { Erro } from './resultado.ts';
 
 // Roteador mínimo sobre node:http. É infraestrutura comum: não conhece
 // nenhum módulo, e cada módulo entrega as suas rotas prontas.
@@ -15,6 +16,12 @@ async function lerCorpo(req: IncomingMessage): Promise<unknown> {
   let texto = '';
   for await (const pedaco of req) texto += pedaco;
   return texto ? JSON.parse(texto) : undefined;
+}
+
+const STATUS_DO_ERRO = { malformado: 400, inexistente: 404, recusado: 409 } as const;
+
+export function respostaDeErro(erro: Erro): Resposta {
+  return { status: STATUS_DO_ERRO[erro.tipo], corpo: { erro: erro.mensagem } };
 }
 
 export function criarServidor(rotas: Rota[]) {
