@@ -14,10 +14,14 @@ const PELO_PID = [
 ];
 // Busca e mensagem de commit só citam o nome.
 const SO_CITA = /^(?:grep|rg|findstr|select-string|git\s+(?:commit|grep|log|show|diff))\b/i;
+// powershell -Command "…", cmd /c "…" e bash -c '…' rodam o que está entre as aspas.
+const EMBRULHO =
+  /\b(?:powershell|pwsh)(?:\.exe)?(?:\s+-\w+)*?\s+-(?:command|c)\s+(["'])(.*?)\1|\bcmd(?:\.exe)?\s+\/\/?c\s+(["'])(.*?)\3|\b(?:ba)?sh\s+-c\s+(["'])(.*?)\5/gi;
 
 const entrada = lerEntrada();
 // Cada comando de uma linha composta, e cada $(...) ou `...`, é um trecho.
 const trechos = String(entrada.tool_input?.command ?? '')
+  .replace(EMBRULHO, (_, a, ps, b, cmd, c, sh) => ps ?? cmd ?? sh)
   .split(/&&|\|\||;|\||\n|\$\(|`/)
   .map((t) => t.replace(/\)+\s*$/, '').replace(/\s+\d?>>?\s*\S+$/, '').trim())
   .filter(Boolean);
