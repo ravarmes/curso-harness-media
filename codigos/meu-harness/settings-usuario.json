@@ -34,7 +34,8 @@
       {
         "matcher": "Bash|PowerShell",
         "hooks": [
-          { "type": "command", "command": "node", "args": ["/CAMINHO/ABSOLUTO/meu-harness/hooks/commit-so-verde.mjs"] }
+          { "type": "command", "command": "node", "args": ["/CAMINHO/ABSOLUTO/meu-harness/hooks/commit-so-verde.mjs"] },
+          { "type": "command", "command": "node", "args": ["/CAMINHO/ABSOLUTO/meu-harness/hooks/encerrar-pelo-pid.mjs"] }
         ]
       }
     ],
