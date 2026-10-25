@@ -18,5 +18,7 @@ export function profissionais(banco: DatabaseSync) {
     ],
     // Para os outros módulos (ex.: agenda) perguntarem se o profissional existe.
     existe: (id: number) => repo.buscar(id) !== undefined,
+    // Faixas em minutos desde 00:00 de Brasília; dia_semana 0 = segunda.
+    expediente: (id: number) => repo.expediente(id),
   };
 }
