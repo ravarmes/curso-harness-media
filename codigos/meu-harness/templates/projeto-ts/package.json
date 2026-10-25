@@ -1,0 +1,19 @@
+{
+  "name": "projeto-ts",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "dev": "node --watch src/servidor.ts",
+    "start": "node src/servidor.ts",
+    "test": "node --test --test-reporter=dot \"src/**/*.test.ts\" \"tests/**/*.test.ts\"",
+    "typecheck": "tsc --noEmit",
+    "verify": "npm run typecheck && npm run test"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.9.0"
+  }
+}
