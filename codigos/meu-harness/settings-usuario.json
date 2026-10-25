@@ -6,7 +6,8 @@
       "Bash(npm run test)",
       "Bash(git status)",
       "Bash(git diff *)",
-      "Bash(git log *)"
+      "Bash(git log *)",
+      "Bash(git rev-parse *)"
     ],
     "ask": [
       "Bash(npm install *)",
