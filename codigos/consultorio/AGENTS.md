@@ -1,28 +1,33 @@
 # Consultório: API da agenda
 
 ## Comandos
-- Na primeira vez, sem a pasta `.venv`: `py -3.12 -m venv .venv` no Windows
-  (`python3.12 -m venv .venv` nos outros sistemas) e depois
-  `.venv\Scripts\python -m pip install -r requirements.txt`. O código
-  precisa do Python 3.12 ou mais recente; o `python` do sistema pode ser
-  mais antigo.
-- `.venv\Scripts\python -m pytest -q` (no Windows; `.venv/bin/python` nos
-  outros sistemas): os testes. Rode antes de dizer que terminou e mostre
-  a saída.
-- `.venv\Scripts\python -m uvicorn app.main:app --reload`: sobe a API em
-  http://127.0.0.1:8000 (documentação interativa em /docs).
+- Na primeira vez: `npm install` (Node.js 22.18 ou mais recente).
+- `npm run dev`: sobe a API em http://localhost:3000 e reinicia ao salvar.
+- `npm run verify`: tipos, testes e teste de arquitetura. Rode antes de
+  dizer que terminou e mostre a saída.
+
+## Arquitetura
+- Monólito modular em fatias verticais. Antes de criar ou mover arquivos
+  em `src/`, leia `docs/arquitetura.md`.
+- Se o teste de arquitetura reprovar, corrija o código, não o teste.
 
 ## Regras que o código não mostra
-- Código de erro: 404 quando o recurso não existe; 409 quando uma regra de
-  negócio recusa o pedido (horário ocupado, fora do prazo, fora do
-  expediente); 422 quando o dado vem malformado. O corpo dos erros que o
-  nosso código levanta é {"detail": "<mensagem em português>"}; o 422 que
-  o próprio FastAPI gera fica como ele faz (lista em "detail"). Motivo: o
-  cliente decide o que fazer pelo código, então o mesmo caso não pode ter
-  dois códigos.
-- Horário sem fuso é horário de Brasília (America/Sao_Paulo); o banco
-  guarda UTC. Motivo: o consultório atende num fuso só.
+- Código de erro: 400 quando o dado vem malformado ou faltando; 404 quando
+  o recurso não existe (inclusive paciente ou profissional citado no
+  corpo); 409 quando uma regra de negócio recusa o pedido (horário ocupado,
+  fora do expediente, fora do prazo). O corpo é sempre
+  {"erro": "<mensagem em português>"}. Motivo: o cliente decide o que
+  fazer pelo código, então o mesmo caso não pode ter dois códigos.
+- Horário chega em ISO 8601 com offset (2026-11-10T14:00:00-03:00); sem
+  offset, 400. O banco guarda UTC, e tudo o que fala de "dia" usa a data de
+  Brasília (America/Sao_Paulo). Motivo: o consultório atende num fuso só.
 
 ## Decisões que não se reabrem
-- Python, FastAPI e SQLite (outubro de 2026): é o que o projeto já usa.
-  Não proponha trocar de linguagem nem de framework.
+- TypeScript no modelo de projeto do harness (outubro de 2026): o
+  consultório antigo, em Python, foi refeito aqui. Não proponha voltar.
+- Sem framework HTTP nem ORM: o roteador mínimo fica em
+  `src/compartilhado/http.ts` e o banco é o `node:sqlite`. Menos
+  dependências, menos código para o agente ler. Não proponha trocar.
+- Node.js 22.18 ou mais recente roda o TypeScript direto, sem build. Não
+  use `enum`, `namespace` nem propriedades no construtor: o Node não as
+  executa sem compilação (o `tsc` acusa).
