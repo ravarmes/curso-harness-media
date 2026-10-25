@@ -52,6 +52,36 @@ class ProfissionalIn(BaseModel):
     especialidade: str = Field(min_length=1)
 
 
+def _hhmm_para_min(v: str) -> int:
+    m = re.fullmatch(r"(\d{2}):(\d{2})", v)
+    if not m:
+        raise ValueError("horário deve estar no formato HH:MM")
+    h, mi = int(m[1]), int(m[2])
+    if mi > 59 or h > 24 or (h == 24 and mi != 0):
+        raise ValueError("horário inválido")
+    return h * 60 + mi
+
+
+def _min_para_hhmm(m: int) -> str:
+    return f"{m // 60:02d}:{m % 60:02d}"
+
+
+class FaixaIn(BaseModel):
+    dia_semana: int = Field(ge=0, le=6)  # 0 = segunda ... 6 = domingo
+    inicio: str  # HH:MM, horário de Brasília
+    fim: str  # HH:MM; "24:00" vale para o fim do dia
+
+    @field_validator("inicio", "fim")
+    @classmethod
+    def valida_hora(cls, v):
+        _hhmm_para_min(v)
+        return v
+
+
+class ExpedienteIn(BaseModel):
+    faixas: list[FaixaIn]
+
+
 class ConsultaIn(BaseModel):
     paciente_id: int
     profissional_id: int
@@ -149,6 +179,68 @@ def create_app(db_path: str | None = None, sender=None, iniciar_agendador: bool 
             raise HTTPException(404, "Profissional não encontrado")
         return dict(r)
 
+    # --- expediente ---
+    def faixas_do_dia(profissional_id: int, dia: int) -> list[tuple[int, int]]:
+        rows = conn.execute(
+            "SELECT inicio_min, fim_min FROM expediente WHERE profissional_id = ? AND dia_semana = ?",
+            (profissional_id, dia),
+        )
+        return [(r["inicio_min"], r["fim_min"]) for r in rows]
+
+    def dentro_do_expediente(profissional_id: int, inicio: datetime, fim: datetime) -> bool:
+        """A consulta (que pode atravessar a meia-noite) precisa caber em faixas do expediente, dia a dia."""
+        ini, fi = inicio.astimezone(TZ_LOCAL), fim.astimezone(TZ_LOCAL)
+        dia = ini.date()
+        while dia <= fi.date():
+            a = ini.hour * 60 + ini.minute if dia == ini.date() else 0
+            b = fi.hour * 60 + fi.minute if dia == fi.date() else 24 * 60
+            if b > a and not any(fi_ <= a and b <= ff for fi_, ff in faixas_do_dia(profissional_id, dia.weekday())):
+                return False
+            dia += timedelta(days=1)
+        return True
+
+    def expediente_out(profissional_id: int) -> dict:
+        rows = conn.execute(
+            "SELECT dia_semana, inicio_min, fim_min FROM expediente WHERE profissional_id = ? "
+            "ORDER BY dia_semana, inicio_min",
+            (profissional_id,),
+        )
+        return {"faixas": [
+            {"dia_semana": r["dia_semana"], "inicio": _min_para_hhmm(r["inicio_min"]), "fim": _min_para_hhmm(r["fim_min"])}
+            for r in rows
+        ]}
+
+    @app.get("/profissionais/{id}/expediente")
+    def obter_expediente(id: int):
+        if not conn.execute("SELECT 1 FROM profissionais WHERE id = ?", (id,)).fetchone():
+            raise HTTPException(404, "Profissional não encontrado")
+        return expediente_out(id)
+
+    @app.put("/profissionais/{id}/expediente")
+    def definir_expediente(id: int, e: ExpedienteIn):
+        """Substitui o expediente inteiro do profissional. Consultas já agendadas não são afetadas."""
+        if not conn.execute("SELECT 1 FROM profissionais WHERE id = ?", (id,)).fetchone():
+            raise HTTPException(404, "Profissional não encontrado")
+        faixas = sorted((f.dia_semana, _hhmm_para_min(f.inicio), _hhmm_para_min(f.fim)) for f in e.faixas)
+        for dia, ini, fim in faixas:
+            if ini >= fim:
+                raise HTTPException(422, "Em cada faixa, o início deve ser anterior ao fim")
+        for (d1, _, f1), (d2, i2, _) in zip(faixas, faixas[1:]):
+            if d1 == d2 and i2 < f1:
+                raise HTTPException(422, "Faixas do mesmo dia não podem se sobrepor")
+        conn.execute("BEGIN IMMEDIATE")
+        try:
+            conn.execute("DELETE FROM expediente WHERE profissional_id = ?", (id,))
+            conn.executemany(
+                "INSERT INTO expediente(profissional_id, dia_semana, inicio_min, fim_min) VALUES (?,?,?,?)",
+                [(id, d, i, f) for d, i, f in faixas],
+            )
+            conn.execute("COMMIT")
+        except Exception:
+            conn.execute("ROLLBACK")
+            raise
+        return expediente_out(id)
+
     # --- consultas ---
     @app.post("/consultas", status_code=201)
     def agendar(c: ConsultaIn):
@@ -160,6 +252,9 @@ def create_app(db_path: str | None = None, sender=None, iniciar_agendador: bool 
             raise HTTPException(404, "Paciente não encontrado")
         if not conn.execute("SELECT 1 FROM profissionais WHERE id = ?", (c.profissional_id,)).fetchone():
             raise HTTPException(404, "Profissional não encontrado")
+
+        if not dentro_do_expediente(c.profissional_id, inicio, fim):
+            raise HTTPException(409, "Horário fora do expediente do profissional")
 
         # BEGIN IMMEDIATE torna checagem + inserção atômicas (sem corrida entre requisições)
         conn.execute("BEGIN IMMEDIATE")

@@ -14,7 +14,13 @@ def ctx(tmp_path):
     c = TestClient(app)
     pac = c.post("/pacientes", json={"nome": "Ana", "telefone": "+55 11 99999-8888"}).json()
     pro = c.post("/profissionais", json={"nome": "Dr. Bruno", "especialidade": "Clínico"}).json()
+    dar_expediente_total(c, pro)
     return c, app, sender, pac, pro
+
+
+def dar_expediente_total(c, pro):
+    faixas = [{"dia_semana": d, "inicio": "00:00", "fim": "24:00"} for d in range(7)]
+    assert c.put(f"/profissionais/{pro['id']}/expediente", json={"faixas": faixas}).status_code == 200
 
 
 def em(horas):
@@ -42,6 +48,7 @@ def test_agenda_e_conflito(ctx):
     assert agendar(c, pac, pro, 72.25).status_code == 409             # sobreposição parcial
     assert agendar(c, pac, pro, 72.5).status_code == 201              # encostando é permitido
     outro = c.post("/profissionais", json={"nome": "Dra. C", "especialidade": "Pele"}).json()
+    dar_expediente_total(c, outro)
     assert agendar(c, pac, outro, 72).status_code == 201              # outro profissional ok
 
 
@@ -83,3 +90,56 @@ def test_lembrete_ignora_cancelada(ctx):
     cid = agendar(c, pac, pro, 100).json()["id"]
     c.post(f"/consultas/{cid}/cancelar")
     assert c.post("/lembretes/enviar").json() == {"enviados": 0}
+
+
+def proxima_data_local(dia_semana):
+    """Próxima data (Brasília) com o dia da semana pedido, ao menos 3 dias à frente."""
+    d = (datetime.now(timezone(timedelta(hours=-3))) + timedelta(days=3)).date()
+    while d.weekday() != dia_semana:
+        d += timedelta(days=1)
+    return d
+
+
+def agendar_em(c, pac, pro, dia, hora, dur=30):
+    # sem fuso = horário de Brasília
+    return c.post("/consultas", json={"paciente_id": pac["id"], "profissional_id": pro["id"],
+                                      "inicio": f"{dia.isoformat()}T{hora}:00", "duracao_min": dur})
+
+
+def test_expediente_restringe_agendamento(ctx):
+    c, _, _, pac, _ = ctx
+    pro = c.post("/profissionais", json={"nome": "Dra. D", "especialidade": "Pele"}).json()
+    faixas = [{"dia_semana": 1, "inicio": "08:00", "fim": "12:00"},
+              {"dia_semana": 1, "inicio": "14:00", "fim": "18:00"}]
+    r = c.put(f"/profissionais/{pro['id']}/expediente", json={"faixas": faixas})
+    assert r.status_code == 200 and r.json()["faixas"] == faixas
+    assert c.get(f"/profissionais/{pro['id']}/expediente").json()["faixas"] == faixas
+
+    terca, quarta = proxima_data_local(1), proxima_data_local(2)
+    assert agendar_em(c, pac, pro, terca, "08:00").status_code == 201
+    assert agendar_em(c, pac, pro, terca, "11:30").status_code == 201      # termina às 12:00
+    assert agendar_em(c, pac, pro, terca, "11:45").status_code == 409      # passa do fim da faixa
+    assert agendar_em(c, pac, pro, terca, "13:00").status_code == 409      # intervalo
+    assert agendar_em(c, pac, pro, terca, "07:30").status_code == 409      # antes do início
+    r = agendar_em(c, pac, pro, quarta, "09:00")                           # dia sem expediente
+    assert r.status_code == 409 and "expediente" in r.json()["detail"]
+
+
+def test_sem_expediente_nao_agenda(ctx):
+    c, _, _, pac, _ = ctx
+    pro = c.post("/profissionais", json={"nome": "Dr. E", "especialidade": "Clínico"}).json()
+    assert agendar(c, pac, pro, 72).status_code == 409
+
+
+def test_expediente_validacoes(ctx):
+    c, _, _, _, pro = ctx
+    url = f"/profissionais/{pro['id']}/expediente"
+    f = lambda d, i, fim: {"faixas": [{"dia_semana": d, "inicio": i, "fim": fim}]}
+    assert c.put(url, json=f(7, "08:00", "12:00")).status_code == 422
+    assert c.put(url, json=f(1, "8h", "12:00")).status_code == 422
+    assert c.put(url, json=f(1, "12:00", "08:00")).status_code == 422
+    sobreposta = {"faixas": [{"dia_semana": 1, "inicio": "08:00", "fim": "12:00"},
+                             {"dia_semana": 1, "inicio": "11:00", "fim": "15:00"}]}
+    assert c.put(url, json=sobreposta).status_code == 422
+    assert c.put("/profissionais/999/expediente", json={"faixas": []}).status_code == 404
+    assert c.get("/profissionais/999/expediente").status_code == 404

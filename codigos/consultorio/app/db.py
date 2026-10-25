@@ -13,6 +13,14 @@ CREATE TABLE IF NOT EXISTS profissionais (
     nome TEXT NOT NULL,
     especialidade TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS expediente (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    profissional_id INTEGER NOT NULL REFERENCES profissionais(id),
+    dia_semana INTEGER NOT NULL,   -- 0 = segunda ... 6 = domingo
+    inicio_min INTEGER NOT NULL,   -- minutos desde 00:00, horário de Brasília
+    fim_min INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_expediente_prof ON expediente(profissional_id, dia_semana);
 CREATE TABLE IF NOT EXISTS consultas (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     paciente_id INTEGER NOT NULL REFERENCES pacientes(id),
