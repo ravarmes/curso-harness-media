@@ -1,6 +1,5 @@
 import type { DatabaseSync } from 'node:sqlite';
 import { criarRepositorioAgenda } from './repositorio.ts';
-import { criarRepositorioPacientes } from '../pacientes/repositorio.ts';
 import type { Contexto } from './agendar-consulta/agendar-consulta.ts';
 import { rotaAgendarConsulta } from './agendar-consulta/rota.ts';
 import { rotaObterAgendaDoDia } from './obter-agenda-do-dia/rota.ts';
@@ -15,7 +14,7 @@ export function agenda(
 ) {
   const ctx: Contexto = {
     repo: criarRepositorioAgenda(banco),
-    pacienteExiste: (id) => criarRepositorioPacientes(banco).buscar(id) !== undefined,
+    pacienteExiste: outros.pacientes.existe,
     profissionalExiste: outros.profissionais.existe,
     expedienteDe: outros.profissionais.expediente,
   };
