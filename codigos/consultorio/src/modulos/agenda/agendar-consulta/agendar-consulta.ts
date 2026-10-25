@@ -1,6 +1,6 @@
 import { falha, type Resultado } from '../../../compartilhado/resultado.ts';
 import type { RepositorioAgenda } from '../repositorio.ts';
-import { diaDe, lerInstante, MINUTO_MS, paraBrasilia, paraUtc } from '../tempo.ts';
+import { DIA_MS, diaDe, lerInstante, MINUTO_MS, paraBrasilia, paraUtc } from '../tempo.ts';
 
 // O que a agenda precisa saber dos outros módulos (vem dos index.ts deles).
 export type Contexto = {
@@ -19,6 +19,9 @@ export type ConsultaAgendada = {
   fim: string;
 };
 
+const LIMITE_DE_FALTAS = 3;
+const JANELA_DE_FALTAS_DIAS = 90;
+
 const idPositivo = (v: unknown): v is number => typeof v === 'number' && Number.isInteger(v) && v > 0;
 
 export function agendarConsulta(ctx: Contexto, dados: unknown): Resultado<{ consulta: ConsultaAgendada }> {
@@ -35,6 +38,16 @@ export function agendarConsulta(ctx: Contexto, dados: unknown): Resultado<{ cons
 
   if (!ctx.pacienteExiste(corpo.paciente_id)) return falha('inexistente', 'Paciente não encontrado');
   if (!ctx.profissionalExiste(corpo.profissional_id)) return falha('inexistente', 'Profissional não encontrado');
+
+  // A janela vai do início do dia de hoje (Brasília) menos 90 dias até agora.
+  const desde = paraUtc(diaDe(ctx.agora()).inicioMs - JANELA_DE_FALTAS_DIAS * DIA_MS);
+  const faltas = ctx.repo.faltasDoPaciente(corpo.paciente_id, desde);
+  if (faltas > LIMITE_DE_FALTAS) {
+    return falha(
+      'recusado',
+      `o paciente tem ${faltas} faltas nos últimos ${JANELA_DE_FALTAS_DIAS} dias e não pode agendar`,
+    );
+  }
 
   // O expediente é por dia de Brasília: a consulta tem de caber num dia só (o fim pode ser a meia-noite).
   const dia = diaDe(inicio);

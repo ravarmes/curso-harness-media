@@ -152,3 +152,66 @@ test('consulta cancelada libera o horário do profissional e do paciente', () =>
   assert.ok(agendarConsulta(ctx, pedido('2026-11-10T09:00:00-03:00', '2026-11-10T10:00:00-03:00', 2)).ok); // mesmo profissional
   assert.ok(agendarConsulta(ctx, pedido('2026-11-10T09:00:00-03:00', '2026-11-10T10:00:00-03:00', 1, 2)).ok); // mesmo paciente
 });
+
+// Bloqueio por faltas: "agora" é segunda, 09/11 14:00 em Brasília; a janela de 90 dias começa em 11/08 00:00.
+const AGORA = Date.parse('2026-11-09T14:00:00-03:00');
+
+function cenarioComFaltas() {
+  const ctx = { ...novoCenario(), agora: () => AGORA };
+  // Registra uma falta de 1 h do paciente, começando em `inicio`.
+  const faltar = (paciente: number, inicio: string) => {
+    const { id } = ctx.repo.inserir({
+      paciente_id: paciente,
+      profissional_id: 1,
+      inicio_utc: new Date(inicio).toISOString(),
+      fim_utc: new Date(Date.parse(inicio) + 60 * 60_000).toISOString(),
+    });
+    ctx.repo.registrarFalta(id);
+  };
+  const faltas = (paciente: number, inicios: string[]) => inicios.forEach((i) => faltar(paciente, i));
+  return { ctx, faltar, faltas };
+}
+const AMANHA = pedido('2026-11-10T14:00:00-03:00', '2026-11-10T15:00:00-03:00');
+const TRES = ['2026-10-01T09:00:00-03:00', '2026-10-15T09:00:00-03:00', '2026-11-05T09:00:00-03:00'];
+
+test('agenda o paciente com 2 faltas nos últimos 90 dias', () => {
+  const { ctx, faltas } = cenarioComFaltas();
+  faltas(1, TRES.slice(0, 2));
+  assert.ok(agendarConsulta(ctx, AMANHA).ok);
+});
+
+test('recusa (409) o paciente com faltas demais nos últimos 90 dias, sem gravar', () => {
+  const { ctx, faltas } = cenarioComFaltas();
+  faltas(1, [...TRES, '2026-10-20T09:00:00-03:00', '2026-10-27T09:00:00-03:00']);
+  const r = agendarConsulta(ctx, AMANHA);
+  recusa(r, 'recusado');
+  assert.deepEqual(ctx.repo.noPeriodo('2026-11-10T00:00:00.000Z', '2026-11-11T00:00:00.000Z'), []);
+});
+
+test('cancelamentos não contam como falta', () => {
+  const { ctx, faltas } = cenarioComFaltas();
+  faltas(1, TRES.slice(0, 2));
+  for (const h of ['09', '10', '11', '12', '13']) {
+    const { id } = ctx.repo.inserir({
+      paciente_id: 1,
+      profissional_id: 1,
+      inicio_utc: `2026-11-05T${h}:00:00.000Z`,
+      fim_utc: `2026-11-05T${h}:30:00.000Z`,
+    });
+    ctx.repo.cancelar(id);
+  }
+  assert.ok(agendarConsulta(ctx, AMANHA).ok);
+});
+
+test('as faltas de outro paciente não contam', () => {
+  const { ctx, faltas } = cenarioComFaltas();
+  faltas(1, TRES);
+  assert.ok(agendarConsulta(ctx, pedido('2026-11-10T14:00:00-03:00', '2026-11-10T15:00:00-03:00', 2)).ok);
+});
+
+test('paciente bloqueado com dado malformado ou inexistente recebe 400 ou 404, não 409', () => {
+  const { ctx, faltas } = cenarioComFaltas();
+  faltas(1, TRES);
+  recusa(agendarConsulta(ctx, pedido('amanhã', '2026-11-10T15:00:00-03:00')), 'malformado');
+  recusa(agendarConsulta(ctx, pedido('2026-11-10T14:00:00-03:00', '2026-11-10T15:00:00-03:00', 1, 99)), 'inexistente');
+});
