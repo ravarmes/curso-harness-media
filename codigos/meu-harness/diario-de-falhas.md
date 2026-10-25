@@ -7,7 +7,7 @@ capítulo resolvê-la.
 
 | # | Rodada | O que o agente fez | O que deveria ter feito | Controle que faltou | Resolvido em |
 |---|--------|--------------------|-------------------------|---------------------|--------------|
-| F01 | cap01 | Escolheu Python + FastAPI sem perguntar, mesmo vendo o Node instalado | Usar a stack do autor (TypeScript) ou perguntar | Guia inferencial | |
+| F01 | cap01 | Escolheu Python + FastAPI sem perguntar, mesmo vendo o Node instalado | Usar a stack do autor (TypeScript) ou perguntar | Guia inferencial | cap02 |
 | F02 | cap01 | Pôs rotas, validação, regra de conflito e agendador num só `main.py`, a regra em SQL dentro da rota | Regra de negócio separada da rota, uma pasta por operação, com teste próprio | Guia inferencial + sensor computacional | |
 | F03 | cap01 | Aceitou o mesmo paciente em duas consultas no mesmo horário; o teste dele dá isso como certo | Perguntar, ou escrever a regra antes do código | Guia inferencial | |
 | F04 | cap01 | Aceitou consulta num domingo às 3h e uma de 7 horas atravessando a madrugada | Perguntar o horário de atendimento, ou registrar a suposição | Guia inferencial | |
@@ -15,7 +15,9 @@ capítulo resolvê-la.
 | F06 | cap01 | Disse que a mensagem simulada "aparece no log"; ela não aparece (log.info descartado) | Rodar o caminho antes de afirmar | Sensor inferencial (comportamento) | |
 | F07 | cap01 | Testes presos ao relógio real e sem a fronteira das 24 h | Relógio injetável e teste na fronteira | Guia inferencial + sensor inferencial | |
 | F08 | cap01 | Terminou sem nenhum commit | Commit por funcionalidade, com a verificação passando | Guia inferencial + sensor computacional | |
-| F09 | cap01 | Decidiu sozinho o código de cada erro, e a decisão mudou na segunda rodada (409 → 422) | Um contrato de erros único, escrito no projeto | Guia inferencial | |
+| F09 | cap01 | Decidiu sozinho o código de cada erro, e a decisão mudou na segunda rodada (409 → 422) | Um contrato de erros único, escrito no projeto | Guia inferencial | cap02 (no projeto que tem o contrato) |
+| F10 | cap02 | O `AGENTS.md` dava o comando dos testes com o `.venv`, que não existia; o agente gastou quatro chamadas procurando um Python e achou primeiro um que não roda o código | A instrução dizer como preparar o projeto na primeira vez | Guia inferencial (instruções do projeto) | cap02 |
+| F11 | cap02 | Para desligar o servidor de teste dele, encerrou todos os processos Node da máquina (`taskkill //F //IM node.exe`) | Parar o próprio processo pelo número (PID) | Barreira computacional | |
 
 ## Nota da rodada cap01
 
@@ -25,3 +27,17 @@ capítulo resolvê-la.
 - Maior parte do gasto: o que entra sempre (instruções do fabricante, as 31 ferramentas,
   a lista de skills), cerca de dois terços do total.
 - Pedidos de permissão: 12 (4 comandos no terminal, 7 arquivos criados, 1 edição).
+
+## Nota da rodada cap02
+
+- Instruções na janela: 929 tokens (`/context`): `CLAUDE.md` 26, `AGENTS.global.md`
+  446, `consultorio/AGENTS.md` 457. Menos de 5% do que já entra antes do pedido.
+- Expediente: seguiu o contrato de erros (404, 409, 422) e rodou os testes, mas não
+  mostrou a saída, só o número ("os 10 testes passam").
+- O contrato se contradizia: o 422 do FastAPI vem com `detail` em lista, em inglês, e a
+  instrução dizia "sempre uma mensagem em português". Corrigido no `AGENTS.md`.
+- F03 e F08 continuam: nenhuma instrução fala delas.
+- O mesmo pedido do cap01, num projeto novo e só com as instruções globais: TypeScript,
+  `npm run verify`, perguntou antes de instalar. Mas o contrato de erros voltou a ser
+  dele (400 e 422, `{"error": ...}` em inglês). O contrato é do projeto, e aquele projeto
+  ainda não tinha um.
