@@ -8,7 +8,7 @@ capítulo resolvê-la.
 | # | Rodada | O que o agente fez | O que deveria ter feito | Controle que faltou | Resolvido em |
 |---|--------|--------------------|-------------------------|---------------------|--------------|
 | F01 | cap01 | Escolheu Python + FastAPI sem perguntar, mesmo vendo o Node instalado | Usar a stack do autor (TypeScript) ou perguntar | Guia inferencial | cap02 |
-| F02 | cap01 | Pôs rotas, validação, regra de conflito e agendador num só `main.py`, a regra em SQL dentro da rota | Regra de negócio separada da rota, uma pasta por operação, com teste próprio | Guia inferencial + sensor computacional | |
+| F02 | cap01 | Pôs rotas, validação, regra de conflito e agendador num só `main.py`, a regra em SQL dentro da rota | Regra de negócio separada da rota, uma pasta por operação, com teste próprio | Guia inferencial + sensor computacional | cap03 |
 | F03 | cap01 | Aceitou o mesmo paciente em duas consultas no mesmo horário; o teste dele dá isso como certo | Perguntar, ou escrever a regra antes do código | Guia inferencial | |
 | F04 | cap01 | Aceitou consulta num domingo às 3h e uma de 7 horas atravessando a madrugada | Perguntar o horário de atendimento, ou registrar a suposição | Guia inferencial | |
 | F05 | cap01 | O lembrete diz "é amanhã" para consulta do mesmo dia | Montar o texto a partir da data e testar o texto | Sensor computacional + sensor inferencial | |
@@ -18,6 +18,7 @@ capítulo resolvê-la.
 | F09 | cap01 | Decidiu sozinho o código de cada erro, e a decisão mudou na segunda rodada (409 → 422) | Um contrato de erros único, escrito no projeto | Guia inferencial | cap02 (no projeto que tem o contrato) |
 | F10 | cap02 | O `AGENTS.md` dava o comando dos testes com o `.venv`, que não existia; o agente gastou quatro chamadas procurando um Python e achou primeiro um que não roda o código | A instrução dizer como preparar o projeto na primeira vez | Guia inferencial (instruções do projeto) | cap02 |
 | F11 | cap02 | Para desligar o servidor de teste dele, encerrou todos os processos Node da máquina (`taskkill //F //IM node.exe`) | Parar o próprio processo pelo número (PID) | Barreira computacional | |
+| F12 | cap03 | Disse que a consulta que atravessa a meia-noite passa se o dia seguinte tiver expediente; o código recusa toda consulta que passa da meia-noite, e o teste dele só confere o lado da recusa | Testar o que afirma, os dois lados da regra | Sensor inferencial (revisor e verificador) | |
 
 ## Nota da rodada cap01
 
@@ -41,3 +42,19 @@ capítulo resolvê-la.
   `npm run verify`, perguntou antes de instalar. Mas o contrato de erros voltou a ser
   dele (400 e 422, `{"error": ...}` em inglês). O contrato é do projeto, e aquele projeto
   ainda não tinha um.
+
+## Nota da rodada cap03
+
+- O consultório recomeçou do modelo de projeto, em TypeScript, com o v0 ao lado só para
+  consulta. Duas rodadas: cadastros (33 testes) e agendamento com agenda do dia (51).
+- O agente leu `docs/arquitetura.md` antes de escrever, nas duas, e o teste de arquitetura
+  não teve o que reprovar. Os outros sensores trabalharam: o `tsc` e os testes reprovaram
+  o primeiro `verify` dos cadastros, e ele corrigiu pelo que leu.
+- Para ver o sensor de arquitetura agir, um atalho foi plantado (a agenda consultando o
+  repositório de pacientes). O `verify` reprovou com a mensagem da regra 1, e numa sessão
+  curta o agente corrigiu o código pelo `index.ts`, sem tocar no teste.
+- F03 e F04 não se repetiram, mas porque o pedido dizia as duas regras. Garantir que a
+  regra seja perguntada antes do código é do cap. 4; por isso as duas seguem abertas.
+- "Na primeira vez: `npm install`" não foi seguida de saída: o agente rodou o `verify`,
+  viu o `tsc` faltar e só então instalou. Custou uma volta.
+- F08 continua: nenhum commit nas três sessões.
