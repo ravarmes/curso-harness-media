@@ -1,55 +1,64 @@
-# Capítulo 5: hooks e permissões no consultório
+# Capítulo 6: explorador e revisor no consultório
 
-Esta branch é o estado do código no fim da prática guiada do capítulo 5. Ela parte da
-`cap-04` e acrescenta, um commit por passo:
+Esta branch é o estado do código no fim da prática guiada do capítulo 6. Ela parte da
+`cap-05` e acrescenta, um commit por passo:
 
 | Commit | O que entra |
 |---|---|
-| 1 | `meu-harness/hooks/`: `formatar.mjs`, `verificar-ao-parar.mjs`, `commit-so-verde.mjs` e a peça comum `comum.mjs` |
-| 2 | `meu-harness/settings-usuario.json`: as permissões do usuário e os três hooks |
-| 3 | Prettier e permissões do projeto (`.prettierrc.json`, `.claude/settings.json`) no modelo de projeto e no consultório |
-| 4 | A formatação única dos dois projetos, num commit só dela |
-| 5 | O provedor falso de WhatsApp (`consultorio/ferramentas/provedor-falso.ts`) e o `.env.exemplo` |
-| 6 | O comando do provedor no `AGENTS.md` do consultório |
-| 7 a 9 | O lembrete na véspera, **commits do próprio agente** na rodada: a especificação, a agenda das consultas de amanhã e o módulo `lembretes` |
-| 10 | O quarto hook, `encerrar-pelo-pid.mjs`, para a falha F11 |
-| 11 | A correção que a rodada mostrou: o hook passa a ler o comando dentro de `powershell -Command`, `cmd /c` e `bash -c` |
-| 12 | O diário: F05, F08 e F11 resolvidas; F14 nova |
-| 13 | Este guia |
+| 1 | `meu-harness/agents/`: o `explorador` e o `revisor` |
+| 2 | A skill `implementar` anota o commit de base e despacha o revisor no fim (no máximo duas revisões) |
+| 3 | `Bash(git rev-parse *)` na lista de permitir de `settings-usuario.json` |
+| 4 e 5 | O bloqueio por faltas, **commits do próprio agente** na rodada: registrar a falta (`POST /consultas/:id/falta`) e recusar o agendamento com 3 faltas nos últimos 90 dias |
+| 6 | O diário: F12 resolvida; F15 nova |
+| 7 | Este guia |
 
-Os commits 7 a 9 aparecem com o autor "Aluno do curso": é a identidade da pasta em que o
+Os commits 4 e 5 aparecem com o autor "Aluno do curso": é a identidade da pasta em que o
 agente trabalhou, e as mensagens são as dele.
 
-## Instalar os hooks e as permissões
+## A branch da provocação: `cap-06-provocacao`
 
-Copie `meu-harness/settings-usuario.json` para `~/.claude/settings.json` (ou acrescente as
-chaves `permissions` e `hooks` às que você já tem) e troque `/CAMINHO/ABSOLUTO/meu-harness`
-pelo caminho real, com barras normais também no Windows
-(`C:/Users/voce/meu-harness/hooks/formatar.mjs`). Numa sessão nova, `/hooks` deve listar os
-quatro.
+Nasce do commit 3 e tem um commit só, **plantado de propósito**: a funcionalidade de faltas do
+agente com dois defeitos (a recusa compara com `> 3`, e registrar falta numa consulta que não
+existe devolve 400 em vez de 404) e os testes que os pegariam enfraquecidos. O
+`npm run verify` passa. Use-a para provocar o revisor:
 
-Para ver o JSON que cada hook recebe e devolve, aponte a variável `MEU_HARNESS_DEPURAR` para
-um arquivo antes de abrir a sessão; cada chamada vira uma linha dele.
+```bash
+git checkout cap-06-provocacao
+cd codigos/consultorio
+npm install
+# numa sessão com o revisor instalado:
+#   Revise a fatia de bloqueio por faltas contra docs/specs/bloqueio-por-faltas.md, com base em HEAD~1.
+```
+
+## Instalar os agentes sem copiar
+
+```bash
+# macOS, Linux ou WSL
+ln -s ~/meu-harness/agents ~/.claude/agents
+
+# Windows (PowerShell): junção de pastas, que não exige administrador
+New-Item -ItemType Junction -Path "$HOME\.claude\agents" -Target "$HOME\meu-harness\agents"
+```
+
+A pasta `~/.claude/agents` não pode existir antes do link. Numa sessão nova, digite `@` e
+confira se `explorador` e `revisor` aparecem.
 
 ## Rodar o consultório (Node.js 22.18 ou mais recente)
 
 ```bash
 cd consultorio
-npm install                 # na primeira vez
-cp .env.exemplo .env        # e troque o token por um texto seu
-npm run verify              # tipos, testes e teste de arquitetura
-npm run provedor            # provedor falso de WhatsApp em http://127.0.0.1:4010
-npm run dev                 # API em http://localhost:3000, em outro terminal
+npm install          # na primeira vez
+npm run verify       # tipos, testes e teste de arquitetura
+npm run dev          # API em http://localhost:3000
 ```
 
-Rota nova: `POST /lembretes/enviar-da-vespera`, que envia o lembrete das consultas de
-amanhã e responde `{ enviados, falhas, jaEnviados }`. Chamá-la de novo não reenvia o que já
-foi. As mensagens que o provedor recebeu aparecem no terminal dele e em `GET /mensagens`.
+Rota nova: `POST /consultas/:id/falta`, para uma consulta agendada que já terminou. O
+agendamento de um paciente com 3 ou mais faltas nos últimos 90 dias (pela data de Brasília)
+responde 409.
 
 ## A sua rodada vai sair diferente
 
-Repare em quatro coisas na sua. O hook de parada devolveu o agente alguma vez, e por quê? O
-agente escreveu arquivos pelo terminal, onde o formatador não alcança? Alguma permissão negou
-uma ação, e ele procurou um caminho em volta? E, no relatório, ele diz o que não verificou?
-O nosso disse que nunca chamou o provedor de verdade, e a conferência pela API foi feita à
-parte.
+Repare em três coisas na sua. A `implementar` despachou o revisor com a especificação e a
+base? O que ele marcou como bloqueio era defeito de verdade, e os achados de melhoria ficaram
+no relatório? E, na provocação, o que ele achou e o que deixou passar? O nosso achou os dois
+defeitos e os três testes fracos, e o agente principal corrigiu tudo sem que ninguém pedisse.
