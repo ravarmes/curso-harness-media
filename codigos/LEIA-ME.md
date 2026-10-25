@@ -1,52 +1,45 @@
-# Capítulo 2: o consultório com instruções
+# Capítulo 3: o consultório renasce no modelo de projeto
 
-Esta branch é o estado do código no fim da prática guiada do capítulo 2. Ela parte da
-`cap-01` e acrescenta, um commit por passo:
+Esta branch é o estado do código no fim da prática guiada do capítulo 3. Ela parte da
+`cap-02` e acrescenta, um commit por passo:
 
 | Commit | O que entra |
 |---|---|
-| 1 | `meu-harness/AGENTS.global.md`: as suas instruções globais, que valem em todo projeto |
-| 2 | `meu-harness/templates/AGENTS.projeto.md`: o modelo para o `AGENTS.md` de cada projeto |
-| 3 | `consultorio/AGENTS.md`: as instruções deste projeto (comandos, contrato de erros, fuso) |
-| 4 | O expediente dos profissionais, **exatamente como a rodada com instruções o entregou** |
-| 5 | A correção das instruções que a rodada mostrou estarem incompletas |
-| 6 | O diário com o que mudou: F01 e F09 resolvidas, F10 e F11 novas |
-| 7 | Este guia |
+| 1 | `meu-harness/templates/projeto-ts/`: o modelo de projeto (monólito modular em fatias verticais, guia de arquitetura, teste de arquitetura e `npm run verify`) |
+| 2 | `consultorio/` recomeça do modelo, com o `AGENTS.md` do projeto; o consultório em Python vai para `consultorio-v0/`, só para consulta |
+| 3 | Os cadastros de pacientes e de profissionais, com o expediente, **exatamente como a rodada os entregou** |
+| 4 | O agendamento e a agenda do dia, **exatamente como a rodada os entregou** |
+| 5 | **Plantado de propósito**, não escrito pelo agente: um atalho da agenda para o repositório de pacientes, para o teste de arquitetura ter o que pegar |
+| 6 | A correção que o agente fez depois de ler a mensagem do teste |
+| 7 | O consultório em Python sai (ele continua nas branches `cap-01` e `cap-02`) |
+| 8 | O diário: F02 resolvida, F12 nova |
+| 9 | Este guia |
 
-Para ver cada passo: `git log --oneline cap-01..cap-02` e `git show <commit>`.
+Para ver cada passo: `git log --oneline cap-02..cap-03` e `git show <commit>`. O
+compare entre `cap-02` e `cap-03` mostra o capítulo inteiro.
 
-## Ligar as instruções globais na sua máquina
-
-O Claude Code lê `~/.claude/CLAUDE.md` em toda sessão. Copie a pasta `meu-harness/` para a
-sua pasta pessoal (`~/meu-harness`) e ponha no `~/.claude/CLAUDE.md` uma linha só:
-
-```text
-@~/meu-harness/AGENTS.global.md
-```
-
-Abra uma sessão dentro de `consultorio/` e rode `/context`: em "Memory files" devem
-aparecer os três arquivos (o `CLAUDE.md`, o `AGENTS.global.md` e o `AGENTS.md` do
-projeto).
-
-## Rodar o consultório (Python 3.12 ou mais recente)
+## Rodar o consultório (Node.js 22.18 ou mais recente)
 
 ```bash
 cd consultorio
-# Windows (PowerShell)
-py -3.12 -m venv .venv
-.\.venv\Scripts\python -m pip install -r requirements.txt
-.\.venv\Scripts\python -m pytest -q
-.\.venv\Scripts\python -m uvicorn app.main:app --reload   # http://127.0.0.1:8000/docs
-
-# macOS, Linux ou WSL: python3.12 -m venv .venv e .venv/bin/python no lugar
+npm install          # na primeira vez
+npm run verify       # tipos, testes e teste de arquitetura
+npm run dev          # API em http://localhost:3000
 ```
 
-O expediente se cadastra com `PUT /profissionais/{id}/expediente`; sem ele, o
-profissional não recebe consulta.
+As rotas: `POST /pacientes`, `POST /profissionais`, `PUT /profissionais/:id/expediente`,
+`POST /consultas` e `GET /profissionais/:id/agenda/:data` (data no formato `AAAA-MM-DD`).
+Os horários vão em ISO 8601 com offset, como `2026-11-10T14:00:00-03:00`.
+
+## Para provocar o sensor você mesmo
+
+Volte o commit 6 (`git revert` ou `git checkout <commit 5> -- consultorio/src`) e rode
+`npm run verify`: a regra 1 reprova e diz o que fazer. Depois experimente outras violações,
+como importar `node:http` dentro de uma regra de negócio.
 
 ## A sua rodada vai sair diferente
 
-As instruções fecham o que elas dizem, e só isso. Na rodada deste capítulo, o agente
-seguiu o contrato de erros e rodou os testes, mas não mostrou a saída deles, e o mesmo
-paciente continua podendo marcar duas consultas no mesmo horário (F03). Compare a sua
-entrega com esta e com o diário, e anote no seu diário o que for seu.
+O nosso agente leu o guia de arquitetura antes de escrever e não quebrou nenhuma fronteira,
+por isso o atalho do commit 5 foi plantado. O seu pode quebrar uma sozinho: se acontecer,
+você vê o sensor de verdade. Compare também o desenho das fatias: o nosso entregou o
+repositório à rota em vez da regra pronta, algo que o teste de arquitetura não confere.
