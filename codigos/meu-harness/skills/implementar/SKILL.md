@@ -6,7 +6,8 @@ description: Implementa uma especificação aprovada uma fatia por vez, com o te
 # Implementar
 
 Antes de começar, confira que a especificação diz `Status: aprovada`. Se
-disser `rascunho`, pare e peça a aprovação.
+disser `rascunho`, pare e peça a aprovação. Anote o commit atual
+(`git rev-parse --short HEAD`): é a base que o revisor vai comparar.
 
 Uma fatia por vez, na ordem da especificação. Copie esta lista para a
 conversa e marque cada item ao concluí-lo:
@@ -14,6 +15,7 @@ conversa e marque cada item ao concluí-lo:
 ```
 - [ ] Fatia 1: teste falhando → código → verificação passando → commit
 - [ ] Fatia 2: ...
+- [ ] Revisão
 - [ ] Relatório final
 ```
 
@@ -35,7 +37,12 @@ conversa e marque cada item ao concluí-lo:
 
 ## Ao terminar
 
-Rode a verificação uma última vez e mostre a saída. Depois, para cada
-critério de aceite, diga qual teste o cobre. Se algum critério ficou sem
-teste, ou se algo da especificação não foi feito, diga isso claramente em
-vez de dizer "pronto".
+1. Rode a verificação uma última vez.
+2. Despache o subagente `revisor` com o caminho da especificação e o commit
+   de base. Corrija o que ele marcar como **bloqueia**, rode a verificação e
+   despache-o de novo. Se depois da segunda revisão ainda houver bloqueio,
+   pare e mostre os achados ao usuário.
+3. Relate: a saída da verificação, o veredito do revisor e, para cada
+   critério de aceite, o teste que o cobre. Achados de melhoria vão no
+   relatório, sem correção. Se algum critério ficou sem teste, ou se algo da
+   especificação não foi feito, diga isso claramente em vez de dizer "pronto".
