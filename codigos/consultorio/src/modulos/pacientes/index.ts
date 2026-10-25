@@ -10,5 +10,10 @@ export function pacientes(banco: DatabaseSync) {
     rotas: [rotaCadastrarPaciente(repo), rotaListarPacientes(repo), rotaObterPaciente(repo)],
     // Para os outros módulos (ex.: agenda) perguntarem se o paciente existe.
     existe: (id: number) => repo.buscar(id) !== undefined,
+    // Nome e telefone, para o módulo lembretes escrever e endereçar a mensagem.
+    contato: (id: number) => {
+      const paciente = repo.buscar(id);
+      return paciente && { nome: paciente.nome, telefone: paciente.telefone };
+    },
   };
 }

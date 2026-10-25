@@ -4,6 +4,7 @@ import type { Contexto } from './agendar-consulta/agendar-consulta.ts';
 import { rotaAgendarConsulta } from './agendar-consulta/rota.ts';
 import { rotaCancelarConsulta } from './cancelar-consulta/rota.ts';
 import { rotaObterAgendaDoDia } from './obter-agenda-do-dia/rota.ts';
+import { consultasDaVespera } from './consultas-da-vespera/consultas-da-vespera.ts';
 
 // A agenda pergunta a pacientes e profissionais pelo index.ts deles.
 export function agenda(
@@ -20,5 +21,9 @@ export function agenda(
     profissionalExiste: outros.profissionais.existe,
     expedienteDe: outros.profissionais.expediente,
   };
-  return { rotas: [rotaAgendarConsulta(ctx), rotaCancelarConsulta(ctx), rotaObterAgendaDoDia(ctx)] };
+  return {
+    rotas: [rotaAgendarConsulta(ctx), rotaCancelarConsulta(ctx), rotaObterAgendaDoDia(ctx)],
+    // Para os outros módulos (ex.: lembretes): consultas agendadas que começam no dia seguinte ao de `agoraMs`.
+    consultasDaVespera: (agoraMs: number) => consultasDaVespera(ctx, agoraMs),
+  };
 }

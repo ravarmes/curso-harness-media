@@ -59,6 +59,16 @@ export function criarRepositorioAgenda(banco: DatabaseSync) {
     cancelar(id: number): void {
       banco.prepare("UPDATE consultas SET status = 'cancelada' WHERE id = ?").run(id);
     },
+    // Consultas agendadas, de todos os profissionais, que começam em [deUtc, ateUtc), em ordem.
+    noPeriodo(deUtc: string, ateUtc: string): Consulta[] {
+      return banco
+        .prepare(
+          `SELECT * FROM consultas WHERE status = 'agendada' AND inicio_utc >= ? AND inicio_utc < ?
+           ORDER BY inicio_utc, id`,
+        )
+        .all(deUtc, ateUtc)
+        .map((l) => ({ ...l }) as Consulta);
+    },
     // Consultas que começam em [deDeUtc, ateUtc), em ordem.
     doProfissionalNoPeriodo(id: number, deUtc: string, ateUtc: string): Consulta[] {
       return banco
