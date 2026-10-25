@@ -3,6 +3,7 @@ import { criarRepositorioAgenda } from './repositorio.ts';
 import type { Contexto } from './agendar-consulta/agendar-consulta.ts';
 import { rotaAgendarConsulta } from './agendar-consulta/rota.ts';
 import { rotaCancelarConsulta } from './cancelar-consulta/rota.ts';
+import { rotaRegistrarFalta } from './registrar-falta/rota.ts';
 import { rotaObterAgendaDoDia } from './obter-agenda-do-dia/rota.ts';
 import { consultasDaVespera } from './consultas-da-vespera/consultas-da-vespera.ts';
 
@@ -22,7 +23,7 @@ export function agenda(
     expedienteDe: outros.profissionais.expediente,
   };
   return {
-    rotas: [rotaAgendarConsulta(ctx), rotaCancelarConsulta(ctx), rotaObterAgendaDoDia(ctx)],
+    rotas: [rotaAgendarConsulta(ctx), rotaCancelarConsulta(ctx), rotaRegistrarFalta(ctx), rotaObterAgendaDoDia(ctx)],
     // Para os outros módulos (ex.: lembretes): consultas agendadas que começam no dia seguinte ao de `agoraMs`.
     consultasDaVespera: (agoraMs: number) => consultasDaVespera(ctx, agoraMs),
   };

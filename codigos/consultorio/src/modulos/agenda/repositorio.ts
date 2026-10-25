@@ -7,7 +7,7 @@ export type Consulta = {
   profissional_id: number;
   inicio_utc: string;
   fim_utc: string;
-  status: 'agendada' | 'cancelada';
+  status: 'agendada' | 'cancelada' | 'faltou';
 };
 
 export function criarRepositorioAgenda(banco: DatabaseSync) {
@@ -58,6 +58,9 @@ export function criarRepositorioAgenda(banco: DatabaseSync) {
     },
     cancelar(id: number): void {
       banco.prepare("UPDATE consultas SET status = 'cancelada' WHERE id = ?").run(id);
+    },
+    registrarFalta(id: number): void {
+      banco.prepare("UPDATE consultas SET status = 'faltou' WHERE id = ?").run(id);
     },
     // Consultas agendadas, de todos os profissionais, que começam em [deUtc, ateUtc), em ordem.
     noPeriodo(deUtc: string, ateUtc: string): Consulta[] {
