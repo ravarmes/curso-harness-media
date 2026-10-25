@@ -62,6 +62,15 @@ export function criarRepositorioAgenda(banco: DatabaseSync) {
     registrarFalta(id: number): void {
       banco.prepare("UPDATE consultas SET status = 'faltou' WHERE id = ?").run(id);
     },
+    // Faltas do paciente em consultas que começam de `deUtc` em diante.
+    faltasDoPaciente(id: number, deUtc: string): number {
+      const linha = banco
+        .prepare(
+          "SELECT COUNT(*) AS total FROM consultas WHERE paciente_id = ? AND status = 'faltou' AND inicio_utc >= ?",
+        )
+        .get(id, deUtc);
+      return Number(linha?.total);
+    },
     // Consultas agendadas, de todos os profissionais, que começam em [deUtc, ateUtc), em ordem.
     noPeriodo(deUtc: string, ateUtc: string): Consulta[] {
       return banco

@@ -16,12 +16,12 @@ Recusar novo agendamento de paciente que tenha 3 ou mais faltas nos últimos 90 
 - [x] registrar falta de consulta já marcada como `faltou` → 409 `{ erro: 'a falta já está registrada' }` (fatia 1)
 - [x] registrar falta de consulta inexistente → 404 `{ erro: 'Consulta não encontrada' }` (fatia 1)
 - [x] consulta marcada como `faltou` deixa de ocupar o horário do profissional e do paciente (fatia 1)
-- [ ] paciente com 2 faltas nos últimos 90 dias agenda → 201 (fatia 2)
-- [ ] paciente com 3 faltas nos últimos 90 dias agenda → 409 `{ erro: 'o paciente tem 3 faltas nos últimos 90 dias e não pode agendar' }`, nada é gravado (fatia 2)
-- [ ] paciente com 3 faltas, uma delas no dia de hoje menos 90 dias (Brasília), agenda → 409; com a mais antiga no dia de hoje menos 91 dias → 201 (fatia 2)
-- [ ] paciente com 2 faltas e 5 consultas canceladas agenda → 201 (fatia 2)
-- [ ] faltas de outro paciente não contam: paciente A com 3 faltas, paciente B com 0 → B agenda, 201 (fatia 2)
-- [ ] paciente com 3 faltas e dado malformado no corpo → 400, não 409 (a validação vem antes da regra de faltas) (fatia 2)
+- [x] paciente com 2 faltas nos últimos 90 dias agenda → 201 (fatia 2)
+- [x] paciente com 3 faltas nos últimos 90 dias agenda → 409 `{ erro: 'o paciente tem 3 faltas nos últimos 90 dias e não pode agendar' }`, nada é gravado (fatia 2)
+- [x] paciente com 3 faltas, uma delas no dia de hoje menos 90 dias (Brasília), agenda → 409; com a mais antiga no dia de hoje menos 91 dias → 201 (fatia 2)
+- [x] paciente com 2 faltas e 5 consultas canceladas agenda → 201 (fatia 2)
+- [x] faltas de outro paciente não contam: paciente A com 3 faltas, paciente B com 0 → B agenda, 201 (fatia 2)
+- [x] paciente com 3 faltas e dado malformado no corpo → 400, não 409 (a validação vem antes da regra de faltas) (fatia 2)
 
 ## Suposições
 - Falta é registrada à mão, pela recepção, depois que a consulta termina. Hoje não há conceito de falta; marcar "compareceu" não é necessário porque só a falta é registrada.
