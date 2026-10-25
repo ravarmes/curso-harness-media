@@ -1,9 +1,5 @@
 {
   "permissions": {
-    "deny": [
-      "Read(/.env)",
-      "Edit(/tests/arquitetura.test.ts)",
-      "Edit(/docs/arquitetura.md)"
-    ]
+    "deny": ["Read(/.env)", "Edit(/tests/arquitetura.test.ts)", "Edit(/docs/arquitetura.md)"]
   }
 }

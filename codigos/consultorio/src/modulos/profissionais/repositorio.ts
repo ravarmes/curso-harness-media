@@ -28,7 +28,10 @@ export function criarRepositorioProfissionais(banco: DatabaseSync) {
       return { id: Number(lastInsertRowid), ...dados };
     },
     listar(): Profissional[] {
-      return banco.prepare('SELECT * FROM profissionais ORDER BY nome, id').all().map((l) => ({ ...l }) as Profissional);
+      return banco
+        .prepare('SELECT * FROM profissionais ORDER BY nome, id')
+        .all()
+        .map((l) => ({ ...l }) as Profissional);
     },
     buscar(id: number): Profissional | undefined {
       const linha = banco.prepare('SELECT * FROM profissionais WHERE id = ?').get(id);

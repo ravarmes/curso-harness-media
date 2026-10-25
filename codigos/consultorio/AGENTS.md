@@ -1,17 +1,20 @@
 # Consultório: API da agenda
 
 ## Comandos
+
 - Na primeira vez: `npm install` (Node.js 22.18 ou mais recente).
 - `npm run dev`: sobe a API em http://localhost:3000 e reinicia ao salvar.
 - `npm run verify`: tipos, testes e teste de arquitetura. Rode antes de
   dizer que terminou e mostre a saída.
 
 ## Arquitetura
+
 - Monólito modular em fatias verticais. Antes de criar ou mover arquivos
   em `src/`, leia `docs/arquitetura.md`.
 - Se o teste de arquitetura reprovar, corrija o código, não o teste.
 
 ## Regras que o código não mostra
+
 - Código de erro: 400 quando o dado vem malformado ou faltando; 404 quando
   o recurso não existe (inclusive paciente ou profissional citado no
   corpo); 409 quando uma regra de negócio recusa o pedido (horário ocupado,
@@ -23,6 +26,7 @@
   Brasília (America/Sao_Paulo). Motivo: o consultório atende num fuso só.
 
 ## Decisões que não se reabrem
+
 - TypeScript no modelo de projeto do harness (outubro de 2026): o
   consultório antigo, em Python, foi refeito aqui. Não proponha voltar.
 - Sem framework HTTP nem ORM: o roteador mínimo fica em

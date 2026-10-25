@@ -6,7 +6,11 @@ export type ConsultaCancelada = ConsultaAgendada & { status: 'cancelada' };
 
 const PRAZO_DO_PACIENTE_MS = 24 * 60 * 60_000;
 
-export function cancelarConsulta(ctx: Contexto, id: string, dados: unknown): Resultado<{ consulta: ConsultaCancelada }> {
+export function cancelarConsulta(
+  ctx: Contexto,
+  id: string,
+  dados: unknown,
+): Resultado<{ consulta: ConsultaCancelada }> {
   const numero = lerId(id);
   if (numero === undefined) return falha('malformado', 'O id da consulta deve ser um número inteiro');
   const corpo = (typeof dados === 'object' && dados !== null ? dados : {}) as Record<string, unknown>;
@@ -14,7 +18,10 @@ export function cancelarConsulta(ctx: Contexto, id: string, dados: unknown): Res
     return falha('malformado', 'quem deve ser "paciente" ou "recepcao"');
   }
   const pacienteId = corpo.paciente_id;
-  if (corpo.quem === 'paciente' && !(typeof pacienteId === 'number' && Number.isInteger(pacienteId) && pacienteId > 0)) {
+  if (
+    corpo.quem === 'paciente' &&
+    !(typeof pacienteId === 'number' && Number.isInteger(pacienteId) && pacienteId > 0)
+  ) {
     return falha('malformado', 'paciente_id deve ser um número inteiro positivo');
   }
 

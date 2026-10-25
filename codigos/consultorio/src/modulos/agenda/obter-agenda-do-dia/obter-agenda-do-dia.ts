@@ -2,7 +2,11 @@ import { falha, lerId, type Resultado } from '../../../compartilhado/resultado.t
 import type { ConsultaAgendada, Contexto } from '../agendar-consulta/agendar-consulta.ts';
 import { DIA_MS, inicioDoDia, paraBrasilia, paraUtc } from '../tempo.ts';
 
-export type AgendaDoDia = { profissional_id: number; data: string; consultas: Omit<ConsultaAgendada, 'profissional_id'>[] };
+export type AgendaDoDia = {
+  profissional_id: number;
+  data: string;
+  consultas: Omit<ConsultaAgendada, 'profissional_id'>[];
+};
 
 // `data` é o dia de Brasília, no formato AAAA-MM-DD.
 export function obterAgendaDoDia(ctx: Contexto, id: string, data: string): Resultado<{ agenda: AgendaDoDia }> {

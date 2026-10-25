@@ -28,7 +28,12 @@ test('agendar consulta e ver a agenda do dia', async () => {
   await chamar('POST', '/profissionais', { nome: 'Dr. Bruno', especialidade: 'Clínico' });
   await chamar('PUT', '/profissionais/1/expediente', { faixas: [{ dia_semana: 1, inicio: '08:00', fim: '12:00' }] });
 
-  const consulta = { paciente_id: 1, profissional_id: 1, inicio: '2026-11-10T09:00:00-03:00', fim: '2026-11-10T10:00:00-03:00' };
+  const consulta = {
+    paciente_id: 1,
+    profissional_id: 1,
+    inicio: '2026-11-10T09:00:00-03:00',
+    fim: '2026-11-10T10:00:00-03:00',
+  };
   const criada = await chamar('POST', '/consultas', consulta);
   assert.equal(criada.status, 201);
   assert.deepEqual(criada.corpo, { id: 1, ...consulta });
@@ -43,7 +48,12 @@ test('agendar consulta e ver a agenda do dia', async () => {
   assert.deepEqual((await chamar('GET', '/profissionais/1/agenda/2026-11-11')).corpo.consultas, []);
 
   // 409: horário do profissional ocupado, horário do paciente ocupado, fora do expediente
-  const sobreposta = { ...consulta, paciente_id: 2, inicio: '2026-11-10T09:30:00-03:00', fim: '2026-11-10T10:30:00-03:00' };
+  const sobreposta = {
+    ...consulta,
+    paciente_id: 2,
+    inicio: '2026-11-10T09:30:00-03:00',
+    fim: '2026-11-10T10:30:00-03:00',
+  };
   const ocupado = await chamar('POST', '/consultas', sobreposta);
   assert.equal(ocupado.status, 409);
   assert.equal(typeof ocupado.corpo.erro, 'string');

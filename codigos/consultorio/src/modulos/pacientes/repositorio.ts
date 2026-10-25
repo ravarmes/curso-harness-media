@@ -17,7 +17,10 @@ export function criarRepositorioPacientes(banco: DatabaseSync) {
       return { id: Number(lastInsertRowid), ...dados };
     },
     listar(): Paciente[] {
-      return banco.prepare('SELECT * FROM pacientes ORDER BY nome, id').all().map((l) => ({ ...l }) as Paciente);
+      return banco
+        .prepare('SELECT * FROM pacientes ORDER BY nome, id')
+        .all()
+        .map((l) => ({ ...l }) as Paciente);
     },
     buscar(id: number): Paciente | undefined {
       const linha = banco.prepare('SELECT * FROM pacientes WHERE id = ?').get(id);

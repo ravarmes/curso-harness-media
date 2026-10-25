@@ -11,9 +11,6 @@ import { rotaListarNotas } from './listar-notas/rota.ts';
 export function moduloNotas(banco: DatabaseSync): { rotas: Rota[] } {
   const repo = criarRepositorioDeNotas(banco);
   return {
-    rotas: [
-      rotaCriarNota((texto) => criarNota(repo, texto)),
-      rotaListarNotas(() => listarNotas(repo)),
-    ],
+    rotas: [rotaCriarNota((texto) => criarNota(repo, texto)), rotaListarNotas(() => listarNotas(repo))],
   };
 }

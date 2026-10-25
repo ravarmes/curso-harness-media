@@ -1,7 +1,14 @@
 import type { DatabaseSync } from 'node:sqlite';
 
 // Instantes em UTC, no formato de toISOString(), que ordena como texto.
-export type Consulta = { id: number; paciente_id: number; profissional_id: number; inicio_utc: string; fim_utc: string; status: 'agendada' | 'cancelada' };
+export type Consulta = {
+  id: number;
+  paciente_id: number;
+  profissional_id: number;
+  inicio_utc: string;
+  fim_utc: string;
+  status: 'agendada' | 'cancelada';
+};
 
 export function criarRepositorioAgenda(banco: DatabaseSync) {
   banco.exec(`
@@ -16,12 +23,19 @@ export function criarRepositorioAgenda(banco: DatabaseSync) {
     CREATE INDEX IF NOT EXISTS idx_consultas_paciente ON consultas (paciente_id, inicio_utc);
   `);
   // Bancos criados antes do cancelamento não têm a coluna.
-  if (!banco.prepare('PRAGMA table_info(consultas)').all().some((c) => c.name === 'status')) {
+  if (
+    !banco
+      .prepare('PRAGMA table_info(consultas)')
+      .all()
+      .some((c) => c.name === 'status')
+  ) {
     banco.exec("ALTER TABLE consultas ADD COLUMN status TEXT NOT NULL DEFAULT 'agendada'");
   }
   // Intervalos [inicio, fim): consulta que começa quando outra termina não se sobrepõe.
   const sobrepoe = (coluna: 'profissional_id' | 'paciente_id') =>
-    banco.prepare(`SELECT 1 FROM consultas WHERE ${coluna} = ? AND status = 'agendada' AND inicio_utc < ? AND fim_utc > ? LIMIT 1`);
+    banco.prepare(
+      `SELECT 1 FROM consultas WHERE ${coluna} = ? AND status = 'agendada' AND inicio_utc < ? AND fim_utc > ? LIMIT 1`,
+    );
   const doProfissional = sobrepoe('profissional_id');
   const doPaciente = sobrepoe('paciente_id');
   return {

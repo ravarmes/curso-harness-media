@@ -54,7 +54,10 @@ test('profissionais e expediente: cadastro, definição, leitura e erros', async
   assert.deepEqual(definido.corpo, { faixas });
   assert.deepEqual((await chamar('GET', '/profissionais/1/expediente')).corpo, { faixas });
 
-  const sobreposta = [{ dia_semana: 1, inicio: '08:00', fim: '12:00' }, { dia_semana: 1, inicio: '11:00', fim: '15:00' }];
+  const sobreposta = [
+    { dia_semana: 1, inicio: '08:00', fim: '12:00' },
+    { dia_semana: 1, inicio: '11:00', fim: '15:00' },
+  ];
   assert.equal((await chamar('PUT', '/profissionais/1/expediente', { faixas: sobreposta })).status, 400);
   assert.equal((await chamar('PUT', '/profissionais/999/expediente', { faixas: [] })).status, 404);
   assert.equal((await chamar('GET', '/profissionais/999/expediente')).status, 404);

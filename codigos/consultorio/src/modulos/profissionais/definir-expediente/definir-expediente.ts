@@ -10,13 +10,17 @@ function lerFaixas(dados: unknown): FaixaDeExpediente[] | string {
 
   const faixas: FaixaDeExpediente[] = [];
   for (const item of lista) {
-    const { dia_semana, inicio, fim } = (typeof item === 'object' && item !== null ? item : {}) as Record<string, unknown>;
+    const { dia_semana, inicio, fim } = (typeof item === 'object' && item !== null ? item : {}) as Record<
+      string,
+      unknown
+    >;
     if (typeof dia_semana !== 'number' || !Number.isInteger(dia_semana) || dia_semana < 0 || dia_semana > 6) {
       return 'Em cada faixa, dia_semana deve ser um inteiro de 0 (segunda) a 6 (domingo)';
     }
     const inicio_min = hhmmParaMinutos(inicio);
     const fim_min = hhmmParaMinutos(fim);
-    if (inicio_min === undefined || fim_min === undefined) return 'Em cada faixa, inicio e fim devem estar no formato HH:MM';
+    if (inicio_min === undefined || fim_min === undefined)
+      return 'Em cada faixa, inicio e fim devem estar no formato HH:MM';
     if (inicio_min >= fim_min) return 'Em cada faixa, o início deve ser anterior ao fim';
     faixas.push({ dia_semana, inicio_min, fim_min });
   }

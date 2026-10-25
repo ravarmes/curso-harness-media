@@ -52,7 +52,12 @@ test('profissional que não existe é inexistente', () => {
 
 test('id ou data malformados são malformado', () => {
   const { ctx } = novoCenario();
-  for (const [id, data] of [['abc', '2026-11-10'], ['1', '10/11/2026'], ['1', '2026-02-30'], ['1', '2026-11-10T00:00:00-03:00']]) {
+  for (const [id, data] of [
+    ['abc', '2026-11-10'],
+    ['1', '10/11/2026'],
+    ['1', '2026-02-30'],
+    ['1', '2026-11-10T00:00:00-03:00'],
+  ]) {
     const r = obterAgendaDoDia(ctx, id, data);
     assert.ok(!r.ok && r.erro.tipo === 'malformado', `${id} ${data}`);
   }
@@ -79,5 +84,8 @@ test('a consulta cancelada não aparece na agenda do dia', () => {
   ctx.repo.cancelar(1);
   const r = obterAgendaDoDia(ctx, '1', '2026-11-10');
   assert.ok(r.ok);
-  assert.deepEqual(r.agenda.consultas.map((c) => c.id), [2]);
+  assert.deepEqual(
+    r.agenda.consultas.map((c) => c.id),
+    [2],
+  );
 });

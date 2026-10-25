@@ -16,5 +16,8 @@ test('lista em ordem alfabética de nome', () => {
   repo.inserir({ nome: 'Dr. Bruno', especialidade: 'Clínico' });
   const r = listarProfissionais(repo);
   assert.ok(r.ok);
-  assert.deepEqual(r.profissionais.map((p) => p.nome), ['Dr. Bruno', 'Dra. Carla']);
+  assert.deepEqual(
+    r.profissionais.map((p) => p.nome),
+    ['Dr. Bruno', 'Dra. Carla'],
+  );
 });

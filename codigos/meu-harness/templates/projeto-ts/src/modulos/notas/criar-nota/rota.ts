@@ -8,9 +8,7 @@ export function rotaCriarNota(criar: (texto: unknown) => ResultadoCriarNota): Ro
     caminho: '/notas',
     manipulador: (corpo) => {
       const resultado = criar((corpo as { texto?: unknown } | undefined)?.texto);
-      return resultado.ok
-        ? { status: 201, corpo: resultado.nota }
-        : { status: 400, corpo: { erro: resultado.erro } };
+      return resultado.ok ? { status: 201, corpo: resultado.nota } : { status: 400, corpo: { erro: resultado.erro } };
     },
   };
 }

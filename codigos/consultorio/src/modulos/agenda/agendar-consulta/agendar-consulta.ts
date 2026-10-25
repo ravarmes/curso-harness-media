@@ -11,14 +11,21 @@ export type Contexto = {
   expedienteDe: (profissionalId: number) => { dia_semana: number; inicio_min: number; fim_min: number }[];
 };
 
-export type ConsultaAgendada = { id: number; paciente_id: number; profissional_id: number; inicio: string; fim: string };
+export type ConsultaAgendada = {
+  id: number;
+  paciente_id: number;
+  profissional_id: number;
+  inicio: string;
+  fim: string;
+};
 
 const idPositivo = (v: unknown): v is number => typeof v === 'number' && Number.isInteger(v) && v > 0;
 
 export function agendarConsulta(ctx: Contexto, dados: unknown): Resultado<{ consulta: ConsultaAgendada }> {
   const corpo = (typeof dados === 'object' && dados !== null ? dados : {}) as Record<string, unknown>;
   if (!idPositivo(corpo.paciente_id)) return falha('malformado', 'paciente_id deve ser um número inteiro positivo');
-  if (!idPositivo(corpo.profissional_id)) return falha('malformado', 'profissional_id deve ser um número inteiro positivo');
+  if (!idPositivo(corpo.profissional_id))
+    return falha('malformado', 'profissional_id deve ser um número inteiro positivo');
   const inicio = lerInstante(corpo.inicio);
   const fim = lerInstante(corpo.fim);
   if (inicio === undefined || fim === undefined) {
@@ -38,7 +45,8 @@ export function agendarConsulta(ctx: Contexto, dados: unknown): Resultado<{ cons
   for (const f of ctx.expedienteDe(corpo.profissional_id)) {
     if (f.dia_semana === dia.diaSemana && f.inicio_min <= coberto && f.fim_min > coberto) coberto = f.fim_min;
   }
-  if (fimMin > 24 * 60 || coberto < fimMin) return falha('recusado', 'A consulta está fora do expediente do profissional');
+  if (fimMin > 24 * 60 || coberto < fimMin)
+    return falha('recusado', 'A consulta está fora do expediente do profissional');
 
   const inicioUtc = paraUtc(inicio);
   const fimUtc = paraUtc(fim);

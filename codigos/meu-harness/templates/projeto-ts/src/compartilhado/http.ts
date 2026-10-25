@@ -30,9 +30,10 @@ export function criarServidor(rotas: Rota[]) {
         const params = rota.regex.exec(url.pathname)?.groups ?? {};
         resposta = await rota.manipulador(await lerCorpo(req), params);
       } catch (erro) {
-        resposta = erro instanceof SyntaxError
-          ? { status: 400, corpo: { erro: 'JSON inválido' } }
-          : { status: 500, corpo: { erro: 'erro interno' } };
+        resposta =
+          erro instanceof SyntaxError
+            ? { status: 400, corpo: { erro: 'JSON inválido' } }
+            : { status: 500, corpo: { erro: 'erro interno' } };
       }
     }
     res.writeHead(resposta.status, { 'content-type': 'application/json; charset=utf-8' });

@@ -10,9 +10,10 @@ function dataValida(ano: number, mes: number, dia: number): boolean {
 
 // ISO 8601 com offset obrigatório (Z ou ±HH:MM) -> milissegundos UTC.
 export function lerInstante(valor: unknown): number | undefined {
-  const m = typeof valor === 'string'
-    ? /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?(Z|[+-]\d{2}:\d{2})$/.exec(valor)
-    : null;
+  const m =
+    typeof valor === 'string'
+      ? /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?(Z|[+-]\d{2}:\d{2})$/.exec(valor)
+      : null;
   if (!m) return undefined;
   const [ano, mes, dia, hora, min] = m.slice(1, 6).map(Number);
   const seg = Number(m[6] ?? 0);

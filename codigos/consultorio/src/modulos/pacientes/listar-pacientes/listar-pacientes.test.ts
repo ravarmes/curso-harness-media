@@ -17,5 +17,8 @@ test('lista em ordem alfabética de nome', () => {
   repo.inserir({ nome: 'Bia', telefone: '+5511999990002', email: null });
   const r = listarPacientes(repo);
   assert.ok(r.ok);
-  assert.deepEqual(r.pacientes.map((p) => p.nome), ['Ana', 'Bia', 'Carla']);
+  assert.deepEqual(
+    r.pacientes.map((p) => p.nome),
+    ['Ana', 'Bia', 'Carla'],
+  );
 });
