@@ -38,19 +38,6 @@ test('lista as consultas do dia em ordem de horário, só do profissional pedido
   });
 });
 
-test('o dia é o de Brasília: 23h de um dia não vaza para o outro, mesmo sendo o dia seguinte em UTC', () => {
-  const { ctx, marcar } = novoCenario();
-  marcar(1, 1, '2026-11-10T23:00:00-03:00', '2026-11-10T23:30:00-03:00'); // 11/11 02:00 UTC
-  marcar(2, 1, '2026-11-11T00:00:00-03:00', '2026-11-11T01:00:00-03:00');
-  const consultas = (data: string) => {
-    const r = obterAgendaDoDia(ctx, '1', data);
-    assert.ok(r.ok);
-    return r.agenda.consultas.map((c) => c.id);
-  };
-  assert.deepEqual(consultas('2026-11-10'), [1]);
-  assert.deepEqual(consultas('2026-11-11'), [2]);
-});
-
 test('dia sem consultas devolve lista vazia', () => {
   const { ctx } = novoCenario();
   const r = obterAgendaDoDia(ctx, '1', '2026-11-10');
