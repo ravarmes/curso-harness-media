@@ -11,7 +11,7 @@
     "passa": true
   },
   { "id": "F4", "descricao": "Bairros: cadastrar bairros com a taxa de entrega e consultar a taxa", "passa": true },
-  { "id": "F5", "descricao": "Cupons: cadastrar cupons de desconto e consultar", "passa": false },
+  { "id": "F5", "descricao": "Cupons: cadastrar cupons de desconto e consultar", "passa": true },
   {
     "id": "F6",
     "descricao": "Pedido: criar pedido com itens e quantidades, aceito só dentro do horário (11h às 23h) e só se houver estoque para todos os itens; ao confirmar baixa o estoque; total com taxa do bairro",
