@@ -19,11 +19,13 @@ const EMBRULHO =
   /\b(?:powershell|pwsh)(?:\.exe)?(?:\s+-\w+)*?\s+-(?:command|c)\s+(["'])(.*?)\1|\bcmd(?:\.exe)?\s+\/\/?c\s+(["'])(.*?)\3|\b(?:ba)?sh\s+-c\s+(["'])(.*?)\5/gi;
 
 const entrada = lerEntrada();
-// Cada comando de uma linha composta, e cada $(...) ou `...`, é um trecho.
+// Cada comando de uma linha composta, e cada $(...) ou `...`, é um trecho. Do
+// trecho saem o que não muda o alvo: o redirecionamento no fim (>/dev/null,
+// 2>nul) e a variável na frente (MSYS_NO_PATHCONV=1).
 const trechos = String(entrada.tool_input?.command ?? '')
   .replace(EMBRULHO, (_, a, ps, b, cmd, c, sh) => ps ?? cmd ?? sh)
   .split(/&&|\|\||;|\||\n|\$\(|`/)
-  .map((t) => t.replace(/\)+\s*$/, '').replace(/\s+\d?>>?\s*\S+$/, '').trim())
+  .map((t) => t.trim().replace(/\)+$/, '').replace(/(\s+\d?>>?\s*\S+)+$/, '').replace(/^(\w+=\S*\s+)+/, '').trim())
   .filter(Boolean);
 const encerram = trechos.filter((t) => !SO_CITA.test(t) && ENCERRA.test(t));
 const proibido = encerram.find((t) => !PELO_PID.some((forma) => forma.test(t)));
@@ -38,7 +40,8 @@ else {
         hookEventName: 'PreToolUse',
         permissionDecision: 'deny',
         permissionDecisionReason:
-          `Encerre só o seu processo, pelo número: kill <pid>, Stop-Process -Id <pid> ou taskkill /PID <pid> /F. ` +
+          `Encerre só o seu processo, pelo número: Stop-Process -Id <pid> ou taskkill /PID <pid> /F ` +
+          `(no Git Bash, taskkill //PID <pid> //F; o kill <pid> do Git Bash só alcança o que ele mesmo abriu). ` +
           `Por nome ou por lista, o comando derruba processos que não são seus. (${proibido})`,
       },
     }),
