@@ -1,52 +1,45 @@
-# Capítulo 8: o harness como plugin e a fase 2 do consultório
+# Projeto final: a lanchonete
 
-Esta branch é o estado do código no fim da parte do consultório da prática guiada do
-capítulo 8. Ela parte da `cap-07` e acrescenta:
+Esta branch é o estado do código no fim do projeto final do curso. Ela parte da `cap-08`, com o
+harness completo (instalado como plugin nas rodadas), e acrescenta `lanchonete/`, uma API de
+pedidos criada do zero a partir de um pedido só:
 
-| Commits | O que entra |
-|---|---|
-| 1 e 2 | A skill `iniciar-projeto` (com o `iniciar.mjs`, que cria um projeto a partir do modelo) e o hook `retomar.mjs`, que abre cada sessão com o estado da tarefa longa |
-| 3 | O harness como plugin: `.claude-plugin/plugin.json` (com o servidor `api-local`), `.claude-plugin/marketplace.json`, `hooks/hooks.json`, o cabeçalho novo do verificador e o `settings-usuario.json` só com permissões |
-| 4 a 9 | O ciclo de melhoria, uma falha do diário por commit: F14 (o formatador alcança o terminal), F16 (o hook do PID e o Git Bash), F17 e F18 (o veredito e a descrição do verificador), F15 e F19 (relatar antes de corrigir; perguntar antes de descartar), F20 (a descrição da `implementar`) e F21 (a `especificar` conta as funcionalidades, em duas tentativas) |
-| 10 a 20 | A fase 2 do consultório, **commits do próprio agente** nas rodadas: a lista em `docs/funcionalidades.json` e uma funcionalidade por sessão (F1 remarcar, F2 relatório de ocupação, F3 lista de espera) |
-| 21 a 25 | O diário fechado, este guia e as correções da revisão final dos hooks (ver o fim do diário) |
+> Quero uma API para os pedidos de uma lanchonete. Ela tem um cardápio com preços e o
+> estoque dos ingredientes de cada item. Um pedido tem itens e quantidades, e só é aceito
+> se houver estoque para todos eles; ao confirmar, o estoque baixa. O cliente pode usar
+> um cupom de desconto, que vale uma vez por cliente. A taxa de entrega depende do
+> bairro, e só se fazem pedidos dentro do horário de funcionamento, das 11h às 23h.
 
-Os commits da fase 2 aparecem com o autor "Aluno do curso": é a identidade da pasta em que o
-agente trabalhou, e as mensagens são as dele. A F4 (aviso de vaga) continua com
-`"passa": false`: é a próxima sessão.
+Todos os commits de `lanchonete/` são **do próprio agente**, com o autor "Aluno do curso" e as
+mensagens dele:
 
-## Instalar o harness como plugin
+| Commits | Sessão | O que entra |
+|---|---|---|
+| 1 e 2 | 0 | A `iniciar-projeto` cria o projeto do modelo e divide o pedido em 8 funcionalidades (`docs/funcionalidades.json`) |
+| 3 a 7 | 1 | F1, cardápio (com uma segunda revisão, depois de o revisor pedir os testes das rotas) |
+| 8 a 23 | 2 a 7 | F2 estoque, F3 receita do item, F4 bairros, F5 cupons, F6 pedido, F7 cupom no pedido |
 
-Antes, desfaça a instalação provisória dos capítulos anteriores: os links das skills e dos
-agentes em `~/.claude/`, e a chave `hooks` do seu `~/.claude/settings.json` (os hooks passam a vir
-do plugin; deixados nas configurações, rodariam duas vezes). Depois:
+A F8 (consultar um pedido) continua com `"passa": false`: é a próxima sessão. O guia do
+capítulo 8, com a instalação do harness como plugin, está na branch `cap-08`.
 
-```bash
-cd ~/meu-harness/mcp/api-local && npm ci && cd ../..
-claude plugin validate .
-claude plugin marketplace add ~/meu-harness       # no Windows: "$HOME\meu-harness"
-claude plugin install meu-harness@pessoal
-```
-
-Na lista `allow` do `~/.claude/settings.json`, troque `"mcp__api-local"` por
-`"mcp__plugin_meu-harness_api-local"`, e copie da `settings-usuario.json` as linhas novas de `ask`.
-Numa sessão nova, `/context` deve listar os agentes e as skills com o prefixo `meu-harness:`.
-
-## Rodar o consultório (Node.js 22.18 ou mais recente)
+## Rodar a lanchonete (Node.js 22.18 ou mais recente)
 
 ```bash
-cd consultorio
+cd lanchonete
 npm install          # na primeira vez
 npm run verify       # tipos, testes e teste de arquitetura
 npm run dev          # API em http://localhost:3000
 ```
 
-Rotas novas: `POST /consultas/:id/remarcacao`, `GET /relatorios/ocupacao/:de/:ate`,
-`POST /lista-de-espera`, `DELETE /lista-de-espera/:id` e
-`GET /profissionais/:id/lista-de-espera/:data`.
+Valores em centavos inteiros. Rotas: `POST /cardapio`, `GET /cardapio`, `GET /cardapio/:id`,
+`PUT /cardapio/:id/receita`, `GET /cardapio/:id/receita`, `POST /estoque`, `GET /estoque`,
+`GET /estoque/:id`, `POST /estoque/:id/reposicao`, `POST /bairros`, `GET /bairros`,
+`GET /bairros/:id`, `POST /cupons`, `GET /cupons/:codigo` e `POST /pedidos`. Fora das 11h às 23h
+(horário de Brasília), o pedido responde 409.
 
 ## A sua rodada vai sair diferente
 
-Repare em três coisas na sua. A fase 2 virou uma lista, ou uma especificação só? Cada sessão
-abriu com o resumo do `retomar.mjs` e terminou numa funcionalidade, com `"passa": true` só depois
-do verificador? E o diário: que falha nova apareceu, e que controle ela pede?
+Repare em três coisas na sua. A lista saiu em ordem de dependência, e cada sessão fez uma
+funcionalidade só? As armadilhas do pedido (dinheiro com casas decimais, dois itens que usam o
+mesmo ingrediente, cupom reaproveitado, o pedido às 23h em ponto) apareceram nos critérios de
+aceite, ou só depois, nos sensores? E o diário: que falha nova o projeto mostrou?
