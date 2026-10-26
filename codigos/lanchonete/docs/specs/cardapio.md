@@ -24,9 +24,9 @@ Também: `cardapio/repositorio.ts`, `cardapio/index.ts` e registro em `src/app.t
 - [x] `POST /cardapio` com nome já cadastrado (ignorando maiúsculas/minúsculas, ex.: `x-burger`) → 409 `{ erro: 'já existe um item com esse nome' }` (fatia 1)
 - [x] `GET /cardapio` com banco vazio → 200 `[]` (fatia 2)
 - [x] `GET /cardapio` após cadastrar dois itens → 200 com os dois, em ordem de id (fatia 2)
-- [ ] `GET /cardapio/1` de item existente → 200 com `{ id: 1, nome, preco }` (fatia 3)
-- [ ] `GET /cardapio/999` inexistente → 404 `{ erro: 'item não encontrado' }` (fatia 3)
-- [ ] `GET /cardapio/abc` → 404 `{ erro: 'item não encontrado' }` (fatia 3)
+- [x] `GET /cardapio/1` de item existente → 200 com `{ id: 1, nome, preco }` (fatia 3)
+- [x] `GET /cardapio/999` inexistente → 404 `{ erro: 'item não encontrado' }` (fatia 3)
+- [x] `GET /cardapio/abc` → 404 `{ erro: 'item não encontrado' }` (fatia 3)
 
 ## Suposições
 
