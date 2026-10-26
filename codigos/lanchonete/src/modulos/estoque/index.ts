@@ -12,9 +12,13 @@ import { rotaReporIngrediente } from './repor-ingrediente/rota.ts';
 
 // API pública do módulo: a única porta pela qual o resto do sistema o usa.
 // É aqui que as fatias recebem o repositório.
-export function moduloEstoque(banco: DatabaseSync): { rotas: Rota[] } {
+export function moduloEstoque(banco: DatabaseSync): {
+  rotas: Rota[];
+  nomeDoIngrediente: (id: number) => string | undefined;
+} {
   const repo = criarRepositorioDoEstoque(banco);
   return {
+    nomeDoIngrediente: (id) => repo.buscarPorId(id)?.nome,
     rotas: [
       rotaCadastrarIngrediente((nome, quantidade) => cadastrarIngrediente(repo, nome, quantidade)),
       rotaReporIngrediente((id, quantidade) => reporIngrediente(repo, id, quantidade)),

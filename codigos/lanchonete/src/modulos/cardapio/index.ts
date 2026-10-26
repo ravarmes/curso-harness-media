@@ -10,9 +10,13 @@ import { rotaListarItens } from './listar-itens/rota.ts';
 
 // API pública do módulo: a única porta pela qual o resto do sistema o usa.
 // É aqui que as fatias recebem o repositório.
-export function moduloCardapio(banco: DatabaseSync): { rotas: Rota[] } {
+export function moduloCardapio(banco: DatabaseSync): {
+  rotas: Rota[];
+  existeItem: (id: number) => boolean;
+} {
   const repo = criarRepositorioDoCardapio(banco);
   return {
+    existeItem: (id) => repo.buscarPorId(id) !== undefined,
     rotas: [
       rotaCadastrarItem((nome, preco) => cadastrarItem(repo, nome, preco)),
       rotaListarItens(() => listarItens(repo)),
