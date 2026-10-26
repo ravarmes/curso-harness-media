@@ -38,3 +38,10 @@
 - Verificador: 10 de 10 critérios.
 - Verificação: `npm run verify` passando.
 - Próximo passo: F6, Pedido.
+
+## 2026-10-25 — F6 Pedido
+- Feito: módulo novo `pedidos` com criar-pedido (`POST /pedidos`): corpo `{ clienteId, bairroId, itens: [{ itemId, quantidade }] }`; aberto das 11:00:00 às 22:59:59 (America/Sao_Paulo), relógio injetado por `criarApp(banco, agora)`; estoque conferido com o consumo somado entre itens, tudo ou nada; baixa e gravação na mesma transação; `precoUnitario` e `taxa` gravados no pedido. Os `index.ts` de `cardapio` (`precoDoItem`), `receitas` (`receitaDoItem`) e `estoque` (`ingredienteNoEstoque`, `baixarEstoque`) ganharam as funções que o pedido usa. Item sem receita é recusado (400). Testes de regra e testes HTTP (`pedidos.http.test.ts`).
+- Revisão: aprovada, sem bloqueios. Melhorias anotadas, não feitas: teste de rollback com `baixarEstoque` lançando erro; teste HTTP para corpo que é número, texto ou lista; a checagem de item repetido acontece dentro do laço de validação das linhas.
+- Verificador: aprovado. Pela API real não deu para exercitar os critérios de horário (relógio real) nem JSON malformado; ambos estão cobertos por testes com relógio injetado e pelo teste HTTP de JSON inválido.
+- Verificação: `npm run verify` passando.
+- Próximo passo: F7, Cupom no pedido (o `clienteId` já fica gravado no pedido; `cupomPorCodigo` está exposto em `cupons`).

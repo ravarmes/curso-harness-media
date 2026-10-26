@@ -15,7 +15,7 @@
   {
     "id": "F6",
     "descricao": "Pedido: criar pedido com itens e quantidades, aceito só dentro do horário (11h às 23h) e só se houver estoque para todos os itens; ao confirmar baixa o estoque; total com taxa do bairro",
-    "passa": false
+    "passa": true
   },
   {
     "id": "F7",
