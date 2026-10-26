@@ -12,7 +12,7 @@
   {
     "id": "F3",
     "descricao": "Lista de espera: o paciente entra na fila de um profissional para um dia, sai dela, e a recepção consulta a fila em ordem de chegada",
-    "passa": false
+    "passa": true
   },
   {
     "id": "F4",
