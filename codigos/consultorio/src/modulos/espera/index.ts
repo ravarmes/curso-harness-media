@@ -3,6 +3,7 @@ import { criarRepositorioEspera } from './repositorio.ts';
 import type { Contexto } from './entrar-na-lista/entrar-na-lista.ts';
 import { rotaEntrarNaLista } from './entrar-na-lista/rota.ts';
 import { rotaSairDaLista } from './sair-da-lista/rota.ts';
+import { rotaConsultarLista } from './consultar-lista/rota.ts';
 
 // A lista de espera pergunta a pacientes e profissionais pelo index.ts deles.
 export function espera(
@@ -19,6 +20,6 @@ export function espera(
     profissionalExiste: outros.profissionais.existe,
   };
   return {
-    rotas: [rotaEntrarNaLista(ctx), rotaSairDaLista(ctx)],
+    rotas: [rotaEntrarNaLista(ctx), rotaSairDaLista(ctx), rotaConsultarLista(ctx)],
   };
 }
