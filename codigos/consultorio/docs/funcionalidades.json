@@ -1,6 +1,22 @@
 [
-  { "id": "F1", "descricao": "Remarcar consulta: o paciente ou a recepção move uma consulta agendada para outro horário livre do mesmo profissional, com as mesmas recusas do agendamento (horário ocupado, fora do expediente, fora do prazo); o horário antigo fica livre", "passa": true },
-  { "id": "F2", "descricao": "Relatório de ocupação por profissional: dado um período (datas de Brasília), devolve para cada profissional as horas de expediente, as horas ocupadas por consultas e o percentual de ocupação", "passa": false },
-  { "id": "F3", "descricao": "Lista de espera: o paciente entra na fila de um profissional para um dia, sai dela, e a recepção consulta a fila em ordem de chegada", "passa": false },
-  { "id": "F4", "descricao": "Aviso de vaga: quando um horário vaga (cancelamento ou remarcação), o primeiro paciente da lista de espera compatível recebe aviso por WhatsApp pelo provedor existente", "passa": false }
+  {
+    "id": "F1",
+    "descricao": "Remarcar consulta: o paciente ou a recepção move uma consulta agendada para outro horário livre do mesmo profissional, com as mesmas recusas do agendamento (horário ocupado, fora do expediente, fora do prazo); o horário antigo fica livre",
+    "passa": true
+  },
+  {
+    "id": "F2",
+    "descricao": "Relatório de ocupação por profissional: dado um período (datas de Brasília), devolve para cada profissional as horas de expediente, as horas ocupadas por consultas e o percentual de ocupação",
+    "passa": true
+  },
+  {
+    "id": "F3",
+    "descricao": "Lista de espera: o paciente entra na fila de um profissional para um dia, sai dela, e a recepção consulta a fila em ordem de chegada",
+    "passa": false
+  },
+  {
+    "id": "F4",
+    "descricao": "Aviso de vaga: quando um horário vaga (cancelamento ou remarcação), o primeiro paciente da lista de espera compatível recebe aviso por WhatsApp pelo provedor existente",
+    "passa": false
+  }
 ]
