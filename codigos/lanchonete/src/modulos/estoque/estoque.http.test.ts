@@ -79,3 +79,50 @@ test('POST /estoque recusa nome repetido, ignorando maiúsculas, com 409', () =>
       corpo: { erro: 'já existe um ingrediente com esse nome' },
     });
   }));
+
+test('POST /estoque/1/reposicao soma ao estoque e devolve 200', () =>
+  comApp(async (pedir) => {
+    await pedir('POST', '/estoque', { nome: 'Carne (g)', quantidade: 500 });
+    assert.deepEqual(await pedir('POST', '/estoque/1/reposicao', { quantidade: 100 }), {
+      status: 200,
+      corpo: { id: 1, nome: 'Carne (g)', quantidade: 600 },
+    });
+  }));
+
+test('POST /estoque/1/reposicao acumula reposições seguidas', () =>
+  comApp(async (pedir) => {
+    await pedir('POST', '/estoque', { nome: 'Pão', quantidade: 0 });
+    await pedir('POST', '/estoque/1/reposicao', { quantidade: 100 });
+    const resposta = await pedir('POST', '/estoque/1/reposicao', { quantidade: 50 });
+    assert.deepEqual(resposta.corpo, { id: 1, nome: 'Pão', quantidade: 150 });
+  }));
+
+test('POST /estoque/1/reposicao recusa quantidade inválida com 400 e não altera o estoque', () =>
+  comApp(async (pedir) => {
+    await pedir('POST', '/estoque', { nome: 'Carne (g)', quantidade: 500 });
+    for (const corpo of [
+      {},
+      { quantidade: '10' },
+      { quantidade: 1.5 },
+      { quantidade: 0 },
+      { quantidade: -5 },
+      undefined,
+    ]) {
+      assert.deepEqual(await pedir('POST', '/estoque/1/reposicao', corpo), {
+        status: 400,
+        corpo: { erro: 'quantidade deve ser um inteiro positivo' },
+      });
+    }
+    const repetida = await pedir('POST', '/estoque/1/reposicao', { quantidade: 1 });
+    assert.deepEqual(repetida.corpo, { id: 1, nome: 'Carne (g)', quantidade: 501 });
+  }));
+
+test('POST /estoque/:id/reposicao recusa ingrediente inexistente com 404', () =>
+  comApp(async (pedir) => {
+    for (const id of ['999', 'abc']) {
+      assert.deepEqual(await pedir('POST', `/estoque/${id}/reposicao`, { quantidade: 10 }), {
+        status: 404,
+        corpo: { erro: 'ingrediente não encontrado' },
+      });
+    }
+  }));
