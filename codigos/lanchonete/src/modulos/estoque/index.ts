@@ -15,10 +15,19 @@ import { rotaReporIngrediente } from './repor-ingrediente/rota.ts';
 export function moduloEstoque(banco: DatabaseSync): {
   rotas: Rota[];
   nomeDoIngrediente: (id: number) => string | undefined;
+  ingredienteNoEstoque: (id: number) => { nome: string; quantidade: number } | undefined;
+  baixarEstoque: (consumos: { ingredienteId: number; quantidade: number }[]) => void;
 } {
   const repo = criarRepositorioDoEstoque(banco);
   return {
     nomeDoIngrediente: (id) => repo.buscarPorId(id)?.nome,
+    ingredienteNoEstoque: (id) => {
+      const ingrediente = repo.buscarPorId(id);
+      return ingrediente && { nome: ingrediente.nome, quantidade: ingrediente.quantidade };
+    },
+    baixarEstoque: (consumos) => {
+      for (const { ingredienteId, quantidade } of consumos) repo.subtrairQuantidade(ingredienteId, quantidade);
+    },
     rotas: [
       rotaCadastrarIngrediente((nome, quantidade) => cadastrarIngrediente(repo, nome, quantidade)),
       rotaReporIngrediente((id, quantidade) => reporIngrediente(repo, id, quantidade)),

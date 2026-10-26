@@ -13,10 +13,12 @@ import { rotaListarItens } from './listar-itens/rota.ts';
 export function moduloCardapio(banco: DatabaseSync): {
   rotas: Rota[];
   existeItem: (id: number) => boolean;
+  precoDoItem: (id: number) => number | undefined;
 } {
   const repo = criarRepositorioDoCardapio(banco);
   return {
     existeItem: (id) => repo.buscarPorId(id) !== undefined,
+    precoDoItem: (id) => repo.buscarPorId(id)?.preco,
     rotas: [
       rotaCadastrarItem((nome, preco) => cadastrarItem(repo, nome, preco)),
       rotaListarItens(() => listarItens(repo)),

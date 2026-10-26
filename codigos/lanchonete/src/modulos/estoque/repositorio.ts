@@ -33,6 +33,9 @@ export function criarRepositorioDoEstoque(banco: DatabaseSync) {
         Ingrediente | undefined;
       return linha && paraIngrediente(linha);
     },
+    subtrairQuantidade(id: number, quantidade: number): void {
+      banco.prepare('UPDATE ingredientes SET quantidade = quantidade - ? WHERE id = ?').run(quantidade, id);
+    },
     somarQuantidade(id: number, quantidade: number): void {
       banco.prepare('UPDATE ingredientes SET quantidade = quantidade + ? WHERE id = ?').run(quantidade, id);
     },
