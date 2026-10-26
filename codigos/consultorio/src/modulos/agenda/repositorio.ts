@@ -95,6 +95,16 @@ export function criarRepositorioAgenda(banco: DatabaseSync) {
         .all(id, deUtc, ateUtc)
         .map((l) => ({ ...l }) as Consulta);
     },
+    // Consultas que ocupam o horário (agendadas e faltas, sem canceladas) e começam em [deUtc, ateUtc).
+    ocupadasDoProfissionalNoPeriodo(id: number, deUtc: string, ateUtc: string): Consulta[] {
+      return banco
+        .prepare(
+          `SELECT * FROM consultas WHERE profissional_id = ? AND status IN ('agendada', 'faltou')
+           AND inicio_utc >= ? AND inicio_utc < ? ORDER BY inicio_utc, id`,
+        )
+        .all(id, deUtc, ateUtc)
+        .map((l) => ({ ...l }) as Consulta);
+    },
   };
 }
 

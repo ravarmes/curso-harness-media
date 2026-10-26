@@ -7,6 +7,7 @@ import { rotaRemarcarConsulta } from './remarcar-consulta/rota.ts';
 import { rotaRegistrarFalta } from './registrar-falta/rota.ts';
 import { rotaObterAgendaDoDia } from './obter-agenda-do-dia/rota.ts';
 import { rotaListarHorariosLivres } from './listar-horarios-livres/rota.ts';
+import { rotaRelatorioDeOcupacao } from './relatorio-de-ocupacao/rota.ts';
 import { consultasDaVespera } from './consultas-da-vespera/consultas-da-vespera.ts';
 
 // A agenda pergunta a pacientes e profissionais pelo index.ts deles.
@@ -14,7 +15,11 @@ export function agenda(
   banco: DatabaseSync,
   outros: {
     pacientes: { existe: (id: number) => boolean };
-    profissionais: { existe: (id: number) => boolean; expediente: Contexto['expedienteDe'] };
+    profissionais: {
+      existe: (id: number) => boolean;
+      expediente: Contexto['expedienteDe'];
+      listar: () => { id: number; nome: string }[];
+    };
   },
 ) {
   const ctx: Contexto = {
@@ -32,6 +37,7 @@ export function agenda(
       rotaRegistrarFalta(ctx),
       rotaObterAgendaDoDia(ctx),
       rotaListarHorariosLivres(ctx),
+      rotaRelatorioDeOcupacao({ ...ctx, listarProfissionais: outros.profissionais.listar }),
     ],
     // Para os outros módulos (ex.: lembretes): consultas agendadas que começam no dia seguinte ao de `agoraMs`.
     consultasDaVespera: (agoraMs: number) => consultasDaVespera(ctx, agoraMs),

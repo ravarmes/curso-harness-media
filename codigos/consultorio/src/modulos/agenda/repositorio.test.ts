@@ -8,6 +8,21 @@ const B = '2026-11-11T12:30:00.000Z';
 const C = '2026-11-12T13:00:00.000Z';
 const D = '2026-11-12T13:30:00.000Z';
 
+test('ocupadasDoProfissionalNoPeriodo inclui faltas e deixa de fora as canceladas', () => {
+  const repo = criarRepositorioAgenda(new DatabaseSync(':memory:'));
+  const agendada = repo.inserir({ paciente_id: 1, profissional_id: 1, inicio_utc: A, fim_utc: B });
+  const faltou = repo.inserir({ paciente_id: 2, profissional_id: 1, inicio_utc: C, fim_utc: D });
+  const cancelada = repo.inserir({ paciente_id: 3, profissional_id: 1, inicio_utc: B, fim_utc: C });
+  repo.inserir({ paciente_id: 4, profissional_id: 2, inicio_utc: A, fim_utc: B });
+  repo.registrarFalta(faltou.id);
+  repo.cancelar(cancelada.id);
+  const ocupadas = repo.ocupadasDoProfissionalNoPeriodo(1, '2026-11-11T00:00:00.000Z', '2026-11-13T00:00:00.000Z');
+  assert.deepEqual(
+    ocupadas.map((c) => c.id),
+    [agendada.id, faltou.id],
+  );
+});
+
 test('remarcar muda o horário da mesma consulta e libera o antigo', () => {
   const repo = criarRepositorioAgenda(new DatabaseSync(':memory:'));
   const { id } = repo.inserir({ paciente_id: 3, profissional_id: 1, inicio_utc: A, fim_utc: B });
