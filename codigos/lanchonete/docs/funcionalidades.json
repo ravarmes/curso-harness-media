@@ -1,5 +1,5 @@
 [
-  { "id": "F1", "descricao": "Cardápio: cadastrar, listar e consultar itens com nome e preço", "passa": false },
+  { "id": "F1", "descricao": "Cardápio: cadastrar, listar e consultar itens com nome e preço", "passa": true },
   { "id": "F2", "descricao": "Estoque: cadastrar ingredientes com quantidade, repor e consultar o estoque", "passa": false },
   { "id": "F3", "descricao": "Receita do item: definir quais ingredientes e quantidades cada item do cardápio consome", "passa": false },
   { "id": "F4", "descricao": "Bairros: cadastrar bairros com a taxa de entrega e consultar a taxa", "passa": false },
