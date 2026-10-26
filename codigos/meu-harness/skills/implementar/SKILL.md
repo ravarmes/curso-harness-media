@@ -1,6 +1,6 @@
 ---
 name: implementar
-description: Implementa uma especificação aprovada uma fatia por vez, com o teste escrito antes do código e a verificação do projeto rodada a cada fatia. Use quando existir uma especificação com "Status: aprovada" em docs/specs/, ou quando o usuário pedir para implementar, continuar ou terminar uma funcionalidade já especificada.
+description: Implementa uma especificação aprovada uma fatia por vez, com o teste escrito antes do código e a verificação do projeto rodada a cada fatia. Use quando existir em docs/specs/ uma especificação com o status aprovada, ou quando o usuário pedir para implementar, continuar ou terminar uma funcionalidade já especificada.
 ---
 
 # Implementar
