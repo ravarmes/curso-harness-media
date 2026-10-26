@@ -9,7 +9,7 @@ capítulo 8. Ela parte da `cap-07` e acrescenta:
 | 3 | O harness como plugin: `.claude-plugin/plugin.json` (com o servidor `api-local`), `.claude-plugin/marketplace.json`, `hooks/hooks.json`, o cabeçalho novo do verificador e o `settings-usuario.json` só com permissões |
 | 4 a 9 | O ciclo de melhoria, uma falha do diário por commit: F14 (o formatador alcança o terminal), F16 (o hook do PID e o Git Bash), F17 e F18 (o veredito e a descrição do verificador), F15 e F19 (relatar antes de corrigir; perguntar antes de descartar), F20 (a descrição da `implementar`) e F21 (a `especificar` conta as funcionalidades, em duas tentativas) |
 | 10 a 20 | A fase 2 do consultório, **commits do próprio agente** nas rodadas: a lista em `docs/funcionalidades.json` e uma funcionalidade por sessão (F1 remarcar, F2 relatório de ocupação, F3 lista de espera) |
-| 21 e 22 | O diário fechado e este guia |
+| 21 a 25 | O diário fechado, este guia e as correções da revisão final dos hooks (ver o fim do diário) |
 
 Os commits da fase 2 aparecem com o autor "Aluno do curso": é a identidade da pasta em que o
 agente trabalhou, e as mensagens são as dele. A F4 (aviso de vaga) continua com
