@@ -1,5 +1,5 @@
 import type { Contexto } from '../agendar-consulta/agendar-consulta.ts';
-import { DIA_MS, diaDe, paraBrasilia, paraUtc } from '../tempo.ts';
+import { DIA_MS, diaDe, paraBrasilia, paraUtc } from '../../../compartilhado/tempo.ts';
 
 export type ConsultaDaVespera = { id: number; paciente_id: number; profissional_id: number; inicio: string };
 

@@ -10,10 +10,12 @@ const h = (hora: number, min = 0) => hora * 60 + min;
 const TERCA = 1; // 2026-11-10 é terça (0 = segunda)
 
 // "Agora" = 2026-11-09T14:00:00-03:00. Profissionais 1 e 2; pacientes 1 a 9.
-function novoCenario(expediente: Faixa[] = [
-  { dia_semana: TERCA, inicio_min: h(8), fim_min: h(12) },
-  { dia_semana: TERCA, inicio_min: h(14), fim_min: h(16) },
-]) {
+function novoCenario(
+  expediente: Faixa[] = [
+    { dia_semana: TERCA, inicio_min: h(8), fim_min: h(12) },
+    { dia_semana: TERCA, inicio_min: h(14), fim_min: h(16) },
+  ],
+) {
   const ctx: Contexto = {
     repo: criarRepositorioAgenda(new DatabaseSync(':memory:')),
     pacienteExiste: (id) => id > 0 && id < 10,
@@ -45,7 +47,18 @@ test('dia sem consultas lista 12 horários de 30 min dentro do expediente', () =
   assert.equal(r.horarios.duracao_min, 30);
   assert.deepEqual(r.horarios.horarios[0], { inicio: '2026-11-10T08:00:00-03:00', fim: '2026-11-10T08:30:00-03:00' });
   assert.deepEqual(inicios(ctx), [
-    '08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '14:00', '14:30', '15:00', '15:30',
+    '08:00',
+    '08:30',
+    '09:00',
+    '09:30',
+    '10:00',
+    '10:30',
+    '11:00',
+    '11:30',
+    '14:00',
+    '14:30',
+    '15:00',
+    '15:30',
   ]);
 });
 

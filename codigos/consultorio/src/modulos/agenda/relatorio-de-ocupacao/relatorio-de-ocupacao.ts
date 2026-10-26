@@ -1,6 +1,6 @@
 import { falha, type Resultado } from '../../../compartilhado/resultado.ts';
 import type { Contexto } from '../agendar-consulta/agendar-consulta.ts';
-import { DIA_MS, diaDe, inicioDoDia, MINUTO_MS, paraUtc } from '../tempo.ts';
+import { DIA_MS, diaDe, inicioDoDia, MINUTO_MS, paraUtc } from '../../../compartilhado/tempo.ts';
 
 export type ContextoRelatorio = Contexto & {
   listarProfissionais: () => { id: number; nome: string }[];

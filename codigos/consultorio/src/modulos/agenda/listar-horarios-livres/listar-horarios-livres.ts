@@ -1,6 +1,6 @@
 import { falha, lerId, type Resultado } from '../../../compartilhado/resultado.ts';
 import type { Contexto } from '../agendar-consulta/agendar-consulta.ts';
-import { diaDe, inicioDoDia, MINUTO_MS, paraBrasilia, paraUtc } from '../tempo.ts';
+import { diaDe, inicioDoDia, MINUTO_MS, paraBrasilia, paraUtc } from '../../../compartilhado/tempo.ts';
 
 export type HorariosLivres = {
   profissional_id: number;

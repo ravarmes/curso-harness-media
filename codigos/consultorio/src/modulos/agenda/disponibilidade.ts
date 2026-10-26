@@ -1,6 +1,6 @@
 import { falha } from '../../compartilhado/resultado.ts';
 import type { Contexto } from './agendar-consulta/agendar-consulta.ts';
-import { diaDe, MINUTO_MS, paraUtc } from './tempo.ts';
+import { diaDe, MINUTO_MS, paraUtc } from '../../compartilhado/tempo.ts';
 
 // Confere expediente e ocupação de um horário (ms UTC). `ignorar` é a consulta que está sendo remarcada.
 export function conferirHorario(

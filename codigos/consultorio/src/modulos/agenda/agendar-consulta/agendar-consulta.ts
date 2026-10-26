@@ -1,7 +1,7 @@
 import { falha, type Resultado } from '../../../compartilhado/resultado.ts';
 import type { RepositorioAgenda } from '../repositorio.ts';
 import { conferirHorario } from '../disponibilidade.ts';
-import { DIA_MS, diaDe, lerInstante, paraBrasilia, paraUtc } from '../tempo.ts';
+import { DIA_MS, diaDe, lerInstante, paraBrasilia, paraUtc } from '../../../compartilhado/tempo.ts';
 
 // O que a agenda precisa saber dos outros módulos (vem dos index.ts deles).
 export type Contexto = {
