@@ -24,3 +24,10 @@
 - Verificador: 11 de 11 critérios.
 - Verificação: `npm run verify` passando.
 - Próximo passo: F4, Bairros.
+
+## 2026-10-25 — F4 Bairros
+- Feito: módulo novo `bairros` com cadastrar-bairro (`POST /bairros`), listar-bairros (`GET /bairros`) e consultar-bairro (`GET /bairros/:id`); taxa em centavos, aceita 0. O `index.ts` expõe `taxaDoBairro` para a F6, registrado em `app.ts`. Testes de regra por fatia e testes HTTP (`bairros.http.test.ts`).
+- Revisão: aprovada, sem bloqueios. Melhoria anotada, não feita: nenhum teste cobre unicidade de nomes com acento (`Várzea`/`VÁRZEA`).
+- Verificador: 10 de 10 critérios.
+- Verificação: `npm run verify` passando.
+- Próximo passo: F5, Cupons.
