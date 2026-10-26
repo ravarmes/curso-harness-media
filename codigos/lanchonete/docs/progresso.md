@@ -45,3 +45,10 @@
 - Verificador: aprovado. Pela API real não deu para exercitar os critérios de horário (relógio real) nem JSON malformado; ambos estão cobertos por testes com relógio injetado e pelo teste HTTP de JSON inválido.
 - Verificação: `npm run verify` passando.
 - Próximo passo: F7, Cupom no pedido (o `clienteId` já fica gravado no pedido; `cupomPorCodigo` está exposto em `cupons`).
+
+## 2026-10-25 — F7 Cupom no pedido
+- Feito: `POST /pedidos` aceita `cupom` opcional (aparado, em maiúsculas). Desconto = `floor(subtotal × percentual / 100)` sobre os itens, sem descontar a taxa; `total = subtotal − desconto + taxa`. A resposta traz sempre `cupom` (código ou `null`) e `desconto`. Uma vez por cliente e por cupom: reuso dá 409 `cupom já usado por este cliente`; cupom inexistente ou de formato inválido dá 400. Ordem: formato → horário → bairro/itens/receita → cupom → estoque. Recusa não consome o cupom. `pedidos` ganhou a dependência `cupomPorCodigo` (vinda de `cupons`), as colunas `desconto` e `cupom_id` (com `ALTER TABLE` para bancos antigos) e um índice único parcial (`cliente_id`, `cupom_id`).
+- Revisão: aprovada, sem bloqueios. Melhorias anotadas, não feitas: teste de recusa por horário não consumir o cupom; teste da migração `ALTER TABLE` e do índice único; o dublê de `cupomPorCodigo` nos testes não normaliza o código.
+- Verificador: aprovado, com ressalvas. Pela API real não deu para exercitar o horário (10:59 com cupom inexistente; recusa por horário não consumir o cupom) nem a migração do banco. O horário está coberto por teste com relógio injetado, exceto o "não consome o cupom" em recusa por horário.
+- Verificação: `npm run verify` passando.
+- Próximo passo: F8, Consultar pedido (ler `desconto` e `cupom` gravados; guardar também o `cupom` pelo `cupom_id`).

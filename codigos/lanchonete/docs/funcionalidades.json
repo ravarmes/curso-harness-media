@@ -20,7 +20,7 @@
   {
     "id": "F7",
     "descricao": "Cupom no pedido: aplicar desconto no pedido, valendo uma vez por cliente",
-    "passa": false
+    "passa": true
   },
   { "id": "F8", "descricao": "Consultar pedido: ver itens, desconto, taxa e total de um pedido", "passa": false }
 ]
