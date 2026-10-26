@@ -1,12 +1,7 @@
 ---
 name: verificador
 description: Confere, com a API rodando, se uma funcionalidade se comporta como os critérios de aceite da especificação dizem. Use depois que o revisor aprovar uma mudança e antes de dar a funcionalidade por terminada, ou quando o usuário pedir para verificar o comportamento da API.
-tools: mcp__api-local
-mcpServers:
-  - api-local:
-      type: stdio
-      command: node
-      args: ["/CAMINHO/ABSOLUTO/meu-harness/mcp/api-local/servidor.mjs"]
+tools: mcp__plugin_meu-harness_api-local
 model: inherit
 ---
 

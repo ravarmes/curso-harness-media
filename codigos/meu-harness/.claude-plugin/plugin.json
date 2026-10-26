@@ -1,0 +1,12 @@
+{
+  "name": "meu-harness",
+  "version": "1.0.0",
+  "description": "Meu harness de programação com agentes: skills de processo, subagentes, hooks de verificação e o servidor MCP api-local.",
+  "author": { "name": "Seu Nome" },
+  "mcpServers": {
+    "api-local": {
+      "command": "node",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/mcp/api-local/servidor.mjs"]
+    }
+  }
+}

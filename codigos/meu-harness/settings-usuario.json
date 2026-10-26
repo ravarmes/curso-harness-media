@@ -8,7 +8,7 @@
       "Bash(git diff *)",
       "Bash(git log *)",
       "Bash(git rev-parse *)",
-      "mcp__api-local"
+      "mcp__plugin_meu-harness_api-local"
     ],
     "ask": [
       "Bash(npm install *)",
@@ -21,32 +21,6 @@
       "Read(**/secrets/**)",
       "Bash(git push --force *)",
       "Bash(git reset --hard *)"
-    ]
-  },
-  "hooks": {
-    "PostToolUse": [
-      {
-        "matcher": "Edit|Write",
-        "hooks": [
-          { "type": "command", "command": "node", "args": ["/CAMINHO/ABSOLUTO/meu-harness/hooks/formatar.mjs"] }
-        ]
-      }
-    ],
-    "PreToolUse": [
-      {
-        "matcher": "Bash|PowerShell",
-        "hooks": [
-          { "type": "command", "command": "node", "args": ["/CAMINHO/ABSOLUTO/meu-harness/hooks/commit-so-verde.mjs"] },
-          { "type": "command", "command": "node", "args": ["/CAMINHO/ABSOLUTO/meu-harness/hooks/encerrar-pelo-pid.mjs"] }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          { "type": "command", "command": "node", "args": ["/CAMINHO/ABSOLUTO/meu-harness/hooks/verificar-ao-parar.mjs"] }
-        ]
-      }
     ]
   }
 }

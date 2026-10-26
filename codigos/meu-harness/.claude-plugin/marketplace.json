@@ -1,0 +1,8 @@
+{
+  "name": "pessoal",
+  "owner": { "name": "Seu Nome" },
+  "description": "O meu harness, instalado a partir do próprio repositório.",
+  "plugins": [
+    { "name": "meu-harness", "source": "./" }
+  ]
+}
