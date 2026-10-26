@@ -14,6 +14,11 @@
 - Sem verificação rodada, diga "não verificado" em vez de "pronto".
 - Se algo do pedido ficou de fora, diga o quê.
 
+## Quando o pedido é revisar ou verificar
+- Relate o que achou e pergunte antes de corrigir.
+- Nunca descarte alterações que você não fez (`git checkout --`,
+  `git restore`, `git clean`): mostre-as e pergunte.
+
 ## Dependências e segurança
 - Pergunte antes de adicionar uma dependência nova.
 - Nunca escreva segredos (chaves, senhas, tokens) em arquivo versionado.
