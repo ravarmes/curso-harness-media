@@ -24,10 +24,23 @@ branch, cada passo da prática guiada é um commit.
 | 8. O harness em ação | `cap-08` | [árvore](https://github.com/ravarmes/curso-harness-media/tree/cap-08/codigos) | [zip](https://github.com/ravarmes/curso-harness-media/archive/refs/heads/cap-08.zip) | [cap-07...cap-08](https://github.com/ravarmes/curso-harness-media/compare/cap-07...cap-08) |
 | Projeto final: a lanchonete | `projeto-final` | [árvore](https://github.com/ravarmes/curso-harness-media/tree/projeto-final/codigos) | [zip](https://github.com/ravarmes/curso-harness-media/archive/refs/heads/projeto-final.zip) | [cap-08...projeto-final](https://github.com/ravarmes/curso-harness-media/compare/cap-08...projeto-final) |
 
+### A branch da provocação
+
+`cap-06-provocacao` não é um capítulo. Ela parte da `cap-06` antes da funcionalidade de
+faltas e traz essa funcionalidade num commit só, com dois defeitos plantados e declarados,
+para provocar o revisor (Capítulo 6) e o verificador (Capítulos 7 e 8):
+[árvore](https://github.com/ravarmes/curso-harness-media/tree/cap-06-provocacao/codigos) ·
+[zip](https://github.com/ravarmes/curso-harness-media/archive/refs/heads/cap-06-provocacao.zip) ·
+[o commit dos defeitos](https://github.com/ravarmes/curso-harness-media/compare/cap-06...cap-06-provocacao).
+O commit dos defeitos tem de ser o último, porque o pedido ao revisor usa `HEAD~1`; por
+isso a branch não ganhou guia próprio, e o `codigos/LEIA-ME.md` dela ainda é o do Capítulo 5.
+O que ela tem está descrito no Passo 6 do Capítulo 6.
+
 ## Como usar
 
 **Baixar um capítulo:** o link "zip" traz a branch inteira. Descompacte e abra a pasta
-`codigos/`. Cada branch tem um `codigos/LEIA-ME.md` que diz o que mudou e como rodar.
+`codigos/`. Cada branch de capítulo tem um `codigos/LEIA-ME.md` que diz o que mudou e
+como rodar.
 
 **Com Git:**
 
