@@ -180,3 +180,24 @@ capítulo resolvê-la.
   e ninguém subiu a API antes de despachá-lo. Ele continua reiniciando a API menos vezes do que as
   instruções pedem, e numa sessão notou, fora da especificação, que a API aceita agendar no passado.
 - F13 segue aberta: seguida em todas as sessões, mas nenhum sensor confere o processo.
+
+## Revisão final do harness
+
+Uma revisão independente do código dos hooks, do servidor e do plugin, depois das rodadas do
+cap. 8, achou brechas que nenhuma rodada tinha mostrado. Corrigidas, com teste, no commit
+`fix: close the hook gaps found in the final review`:
+
+- O `commit-so-verde` e o `verificar-ao-parar` deixavam passar com o `package.json` inválido (o
+  hook quebrava, e hook quebrado não bloqueia), e o `commit-so-verde` não reconhecia
+  `git -C . commit` nem `git -c chave=valor commit`.
+- O `formatar.mjs` formatava arquivos fora do projeto, como os do `meu-harness`, com a
+  configuração do projeto.
+- O `encerrar-pelo-pid.mjs` tinha ficado diferente da regra das rodadas: negava formas pelo
+  número (`Stop-Process -Id 4242 -Force -ErrorAction SilentlyContinue`) e deixava passar outras por
+  nome, pelo WMI e pelo CIM do Windows.
+
+Ficam abertas, menores: o retrato do formatador num caminho fixo dentro de `.git` (um worktree
+quebra, e duas chamadas em paralelo dividem o mesmo arquivo); o `api-local` sem fila entre dois
+`reiniciar_api` ao mesmo tempo, e com um `parar` que pode travar no macOS e no Linux quando a API
+morre por sinal; e o `iniciar.mjs`, que deixa o projeto pela metade quando um passo falha depois da
+cópia.
