@@ -3,6 +3,7 @@ import { criarRepositorioAgenda } from './repositorio.ts';
 import type { Contexto } from './agendar-consulta/agendar-consulta.ts';
 import { rotaAgendarConsulta } from './agendar-consulta/rota.ts';
 import { rotaCancelarConsulta } from './cancelar-consulta/rota.ts';
+import { rotaRemarcarConsulta } from './remarcar-consulta/rota.ts';
 import { rotaRegistrarFalta } from './registrar-falta/rota.ts';
 import { rotaObterAgendaDoDia } from './obter-agenda-do-dia/rota.ts';
 import { rotaListarHorariosLivres } from './listar-horarios-livres/rota.ts';
@@ -27,6 +28,7 @@ export function agenda(
     rotas: [
       rotaAgendarConsulta(ctx),
       rotaCancelarConsulta(ctx),
+      rotaRemarcarConsulta(ctx),
       rotaRegistrarFalta(ctx),
       rotaObterAgendaDoDia(ctx),
       rotaListarHorariosLivres(ctx),

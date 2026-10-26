@@ -15,22 +15,22 @@ O paciente ou a recepção move uma consulta agendada para outro horário livre 
 
 Considere "agora" = 2026-11-09T14:00:00-03:00, profissional 1 com expediente de segunda a sexta, 08:00–18:00, e a consulta 10 (paciente 3, profissional 1) em 2026-11-11T09:00:00-03:00 a 09:30 nos exemplos.
 
-- [ ] paciente 3 remarca a consulta 10 para 2026-11-12T10:00:00-03:00 a 10:30 → 200, mesmo `id` 10, novo início/fim, `status: "agendada"` (fatia 2)
-- [ ] depois de remarcar, o horário antigo (2026-11-11 09:00) aparece livre para o profissional 1 e outro paciente agenda ali → 201; a agenda do dia 12 lista a consulta e a do dia 11 não (fatias 1 e 2)
-- [ ] recepção remarca a consulta 10 para o novo horário livre → 200 (fatia 2)
-- [ ] remarcar para um intervalo que se sobrepõe ao da própria consulta (09:15 a 09:45 no mesmo dia) → 200 (fatia 1)
-- [ ] remarcar para horário em que o profissional 1 já tem outra consulta → 409 `{ erro: 'O profissional já tem consulta nesse horário' }`, a consulta continua no horário antigo (fatia 2)
-- [ ] remarcar para horário em que o paciente 3 já tem consulta com outro profissional → 409 `{ erro: 'O paciente já tem consulta nesse horário' }` (fatia 2)
-- [ ] remarcar para 2026-11-14T10:00:00-03:00 (sábado, sem expediente) ou para 07:30 a 08:00 → 409 `{ erro: 'A consulta está fora do expediente do profissional' }` (fatia 2)
-- [ ] paciente remarca a consulta que começa daqui a 23 h 59 min → 409 `{ erro: 'o paciente só remarca até 24 h antes' }`; com exatamente 24 h → 200 (fatia 2)
-- [ ] recepção remarca a consulta que começa daqui a 23 h 59 min → 200 (fatia 2)
-- [ ] recepção remarca consulta que já começou → 409 `{ erro: 'a consulta já começou' }` (fatia 2)
-- [ ] novo horário no passado (início antes de "agora") → 409 `{ erro: 'o novo horário já passou' }` (fatia 2)
-- [ ] paciente 4 remarca a consulta do paciente 3 → 409 `{ erro: 'a consulta não pertence a esse paciente' }` (fatia 2)
-- [ ] remarcar consulta cancelada → 409 `{ erro: 'a consulta está cancelada' }`; consulta marcada como `faltou` → 409 `{ erro: 'a consulta não está agendada' }` (fatia 2)
-- [ ] id de consulta que não existe → 404 `{ erro: 'Consulta não encontrada' }` (fatia 2)
-- [ ] `quem` ausente ou inválido, `quem: "paciente"` sem `paciente_id` inteiro positivo, id da URL não numérico, `inicio`/`fim` ausentes, sem offset ou com início ≥ fim → 400 (fatia 2)
-- [ ] paciente com 3 faltas remarca uma consulta agendada → 200 (o bloqueio por faltas vale só para agendar) (fatia 2)
+- [x] paciente 3 remarca a consulta 10 para 2026-11-12T10:00:00-03:00 a 10:30 → 200, mesmo `id` 10, novo início/fim, `status: "agendada"` (fatia 2)
+- [x] depois de remarcar, o horário antigo (2026-11-11 09:00) aparece livre para o profissional 1 e outro paciente agenda ali → 201; a agenda do dia 12 lista a consulta e a do dia 11 não (fatias 1 e 2)
+- [x] recepção remarca a consulta 10 para o novo horário livre → 200 (fatia 2)
+- [x] remarcar para um intervalo que se sobrepõe ao da própria consulta (09:15 a 09:45 no mesmo dia) → 200 (fatia 1)
+- [x] remarcar para horário em que o profissional 1 já tem outra consulta → 409 `{ erro: 'O profissional já tem consulta nesse horário' }`, a consulta continua no horário antigo (fatia 2)
+- [x] remarcar para horário em que o paciente 3 já tem consulta com outro profissional → 409 `{ erro: 'O paciente já tem consulta nesse horário' }` (fatia 2)
+- [x] remarcar para 2026-11-14T10:00:00-03:00 (sábado, sem expediente) ou para 07:30 a 08:00 → 409 `{ erro: 'A consulta está fora do expediente do profissional' }` (fatia 2)
+- [x] paciente remarca a consulta que começa daqui a 23 h 59 min → 409 `{ erro: 'o paciente só remarca até 24 h antes' }`; com exatamente 24 h → 200 (fatia 2)
+- [x] recepção remarca a consulta que começa daqui a 23 h 59 min → 200 (fatia 2)
+- [x] recepção remarca consulta que já começou → 409 `{ erro: 'a consulta já começou' }` (fatia 2)
+- [x] novo horário no passado (início antes de "agora") → 409 `{ erro: 'o novo horário já passou' }` (fatia 2)
+- [x] paciente 4 remarca a consulta do paciente 3 → 409 `{ erro: 'a consulta não pertence a esse paciente' }` (fatia 2)
+- [x] remarcar consulta cancelada → 409 `{ erro: 'a consulta está cancelada' }`; consulta marcada como `faltou` → 409 `{ erro: 'a consulta não está agendada' }` (fatia 2)
+- [x] id de consulta que não existe → 404 `{ erro: 'Consulta não encontrada' }` (fatia 2)
+- [x] `quem` ausente ou inválido, `quem: "paciente"` sem `paciente_id` inteiro positivo, id da URL não numérico, `inicio`/`fim` ausentes, sem offset ou com início ≥ fim → 400 (fatia 2)
+- [x] paciente com 3 faltas remarca uma consulta agendada → 200 (o bloqueio por faltas vale só para agendar) (fatia 2)
 
 ## Suposições
 

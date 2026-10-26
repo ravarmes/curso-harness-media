@@ -1,6 +1,7 @@
 import { falha, type Resultado } from '../../../compartilhado/resultado.ts';
 import type { RepositorioAgenda } from '../repositorio.ts';
-import { DIA_MS, diaDe, lerInstante, MINUTO_MS, paraBrasilia, paraUtc } from '../tempo.ts';
+import { conferirHorario } from '../disponibilidade.ts';
+import { DIA_MS, diaDe, lerInstante, paraBrasilia, paraUtc } from '../tempo.ts';
 
 // O que a agenda precisa saber dos outros módulos (vem dos index.ts deles).
 export type Contexto = {
@@ -49,32 +50,14 @@ export function agendarConsulta(ctx: Contexto, dados: unknown): Resultado<{ cons
     );
   }
 
-  // O expediente é por dia de Brasília: a consulta tem de caber num dia só (o fim pode ser a meia-noite).
-  const dia = diaDe(inicio);
-  const inicioMin = (inicio - dia.inicioMs) / MINUTO_MS;
-  const fimMin = (fim - dia.inicioMs) / MINUTO_MS;
-  // Faixas encostadas (08-12 e 12-18) valem como um expediente contínuo.
-  let coberto = inicioMin;
-  for (const f of ctx.expedienteDe(corpo.profissional_id)) {
-    if (f.dia_semana === dia.diaSemana && f.inicio_min <= coberto && f.fim_min > coberto) coberto = f.fim_min;
-  }
-  if (fimMin > 24 * 60 || coberto < fimMin)
-    return falha('recusado', 'A consulta está fora do expediente do profissional');
-
-  const inicioUtc = paraUtc(inicio);
-  const fimUtc = paraUtc(fim);
-  if (ctx.repo.profissionalOcupado(corpo.profissional_id, inicioUtc, fimUtc)) {
-    return falha('recusado', 'O profissional já tem consulta nesse horário');
-  }
-  if (ctx.repo.pacienteOcupado(corpo.paciente_id, inicioUtc, fimUtc)) {
-    return falha('recusado', 'O paciente já tem consulta nesse horário');
-  }
+  const recusa = conferirHorario(ctx, corpo.profissional_id, corpo.paciente_id, inicio, fim);
+  if (recusa) return recusa;
 
   const salva = ctx.repo.inserir({
     paciente_id: corpo.paciente_id,
     profissional_id: corpo.profissional_id,
-    inicio_utc: inicioUtc,
-    fim_utc: fimUtc,
+    inicio_utc: paraUtc(inicio),
+    fim_utc: paraUtc(fim),
   });
   return {
     ok: true,
