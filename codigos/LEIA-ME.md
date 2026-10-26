@@ -1,48 +1,36 @@
-# Capítulo 7: o servidor api-local e o verificador no consultório
+# Capítulo 8: o harness como plugin e a fase 2 do consultório
 
-Esta branch é o estado do código no fim da prática guiada do capítulo 7. Ela parte da
-`cap-06` e acrescenta, um commit por passo:
+Esta branch é o estado do código no fim da parte do consultório da prática guiada do
+capítulo 8. Ela parte da `cap-07` e acrescenta:
 
-| Commit | O que entra |
+| Commits | O que entra |
 |---|---|
-| 1 | `meu-harness/mcp/api-local/`: o servidor MCP (`ler_especificacao`, `reiniciar_api`, `chamar_api`), com as dependências fixadas no `package-lock.json`, e o `.gitignore` do `node_modules/` |
-| 2 | `meu-harness/agents/verificador.md`: o subagente que confere os critérios de aceite pela API rodando |
-| 3 | A skill `implementar` despacha o verificador depois do revisor (no máximo duas verificações) |
-| 4 | `mcp__api-local` na lista de permitir de `settings-usuario.json` |
-| 5 | Os horários livres de um profissional, **commit do próprio agente** na rodada: a especificação e `GET /profissionais/:id/horarios-livres/:data` |
-| 6 a 9 | O diário (F06 resolvida no que passa pela API; F16 a F19 novas) e este guia |
+| 1 e 2 | A skill `iniciar-projeto` (com o `iniciar.mjs`, que cria um projeto a partir do modelo) e o hook `retomar.mjs`, que abre cada sessão com o estado da tarefa longa |
+| 3 | O harness como plugin: `.claude-plugin/plugin.json` (com o servidor `api-local`), `.claude-plugin/marketplace.json`, `hooks/hooks.json`, o cabeçalho novo do verificador e o `settings-usuario.json` só com permissões |
+| 4 a 9 | O ciclo de melhoria, uma falha do diário por commit: F14 (o formatador alcança o terminal), F16 (o hook do PID e o Git Bash), F17 e F18 (o veredito e a descrição do verificador), F15 e F19 (relatar antes de corrigir; perguntar antes de descartar), F20 (a descrição da `implementar`) e F21 (a `especificar` conta as funcionalidades, em duas tentativas) |
+| 10 a 20 | A fase 2 do consultório, **commits do próprio agente** nas rodadas: a lista em `docs/funcionalidades.json` e uma funcionalidade por sessão (F1 remarcar, F2 relatório de ocupação, F3 lista de espera) |
+| 21 e 22 | O diário fechado e este guia |
 
-O commit 5 aparece com o autor "Aluno do curso": é a identidade da pasta em que o agente
-trabalhou, e a mensagem é a dele.
+Os commits da fase 2 aparecem com o autor "Aluno do curso": é a identidade da pasta em que o
+agente trabalhou, e as mensagens são as dele. A F4 (aviso de vaga) continua com
+`"passa": false`: é a próxima sessão.
 
-## Instalar o servidor e o verificador
+## Instalar o harness como plugin
 
-```bash
-cd ~/meu-harness/mcp/api-local
-npm ci               # instala as versões exatas do package-lock.json
-```
-
-No `meu-harness/agents/verificador.md`, troque `/CAMINHO/ABSOLUTO/meu-harness` pelo caminho
-real, com barras normais também no Windows. Se a pasta `agents` já está ligada à pasta pessoal
-desde o capítulo 6, o verificador aparece sozinho: numa sessão nova, digite `@` e confira.
-Acrescente `"mcp__api-local"` à lista `permissions.allow` do seu `~/.claude/settings.json`.
-
-## Provocar o verificador
-
-A branch `cap-06-provocacao` tem a funcionalidade de faltas com dois defeitos **plantados de
-propósito** (a recusa compara com `> 3`, e registrar falta numa consulta que não existe devolve
-400 em vez de 404) e os testes que os pegariam enfraquecidos. O `npm run verify` passa. Num
-clone à parte, com o verificador instalado no seu `~/meu-harness`:
+Antes, desfaça a instalação provisória dos capítulos anteriores: os links das skills e dos
+agentes em `~/.claude/`, e a chave `hooks` do seu `~/.claude/settings.json` (os hooks passam a vir
+do plugin, e em dobro eles rodariam duas vezes). Depois:
 
 ```bash
-git clone https://github.com/ravarmes/curso-harness-media provoca-verificador
-cd provoca-verificador
-git checkout cap-06-provocacao
-cd codigos/consultorio
-npm install
-# numa sessão aberta nesta pasta:
-#   Use o verificador para verificar a especificação bloqueio-por-faltas.
+cd ~/meu-harness/mcp/api-local && npm ci && cd ../..
+claude plugin validate .
+claude plugin marketplace add ~/meu-harness       # no Windows: "$HOME\meu-harness"
+claude plugin install meu-harness@pessoal
 ```
+
+Na lista `allow` do `~/.claude/settings.json`, troque `"mcp__api-local"` por
+`"mcp__plugin_meu-harness_api-local"`, e copie da `settings-usuario.json` as linhas novas de `ask`.
+Numa sessão nova, `/context` deve listar os agentes e as skills com o prefixo `meu-harness:`.
 
 ## Rodar o consultório (Node.js 22.18 ou mais recente)
 
@@ -53,15 +41,12 @@ npm run verify       # tipos, testes e teste de arquitetura
 npm run dev          # API em http://localhost:3000
 ```
 
-Rota nova: `GET /profissionais/:id/horarios-livres/:data`, com `data` no formato
-`AAAA-MM-DD` (dia de Brasília). Devolve os horários de 30 minutos, encadeados a partir do
-início de cada faixa do expediente, em que o profissional não tem consulta.
+Rotas novas: `POST /consultas/:id/remarcacao`, `GET /relatorios/ocupacao/:de/:ate`,
+`POST /lista-de-espera`, `DELETE /lista-de-espera/:id` e
+`GET /profissionais/:id/lista-de-espera/:data`.
 
 ## A sua rodada vai sair diferente
 
-Repare em três coisas na sua. A `implementar` despachou o verificador depois do revisor, com o
-nome da especificação? Cada linha do relatório dele corresponde a uma chamada que aparece na
-sessão? E o que ele marcou como não verificável, e por quê? O nosso aprovou os horários livres
-com três ressalvas, duas por causa do relógio, que a API não deixa fixar; na provocação, achou
-os dois defeitos pela API, e o agente principal descartou as alterações pendentes sem que
-ninguém pedisse.
+Repare em três coisas na sua. A fase 2 virou uma lista, ou uma especificação só? Cada sessão
+abriu com o resumo do `retomar.mjs` e terminou numa funcionalidade, com `"passa": true` só depois
+do verificador? E o diário: que falha nova apareceu, e que controle ela pede?
