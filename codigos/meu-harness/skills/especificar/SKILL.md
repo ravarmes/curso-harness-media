@@ -19,6 +19,10 @@ Antes de escrever código, transforme o pedido numa especificação em
      "Suposições".
 3. Divida a funcionalidade em fatias: uma por operação, no módulo dono da
    regra.
+   Se passar de seis fatias, ou se o pedido junta funcionalidades que dão
+   uma sessão cada, não escreva a especificação: use a skill
+   `iniciar-projeto`, que divide o pedido numa lista para várias sessões, e
+   pare.
 4. Escreva a especificação no formato abaixo, com `Status: rascunho`.
 5. Mostre a especificação e pare. Quando o usuário aprovar, troque a linha
    para `Status: aprovada (<data>)`. Só implemente depois disso.
