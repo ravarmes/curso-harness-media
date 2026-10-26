@@ -7,6 +7,9 @@ export type ItemDoCardapio = { id: number; nome: string; preco: number };
 // (o COLLATE NOCASE do SQLite só trata ASCII).
 const chaveDoNome = (nome: string) => nome.toLocaleLowerCase('pt-BR');
 
+// As linhas do SQLite têm protótipo nulo; o item sai como objeto comum.
+const paraItem = ({ id, nome, preco }: ItemDoCardapio): ItemDoCardapio => ({ id, nome, preco });
+
 export function criarRepositorioDoCardapio(banco: DatabaseSync) {
   banco.exec(
     'CREATE TABLE IF NOT EXISTS itens_do_cardapio (id INTEGER PRIMARY KEY, nome TEXT NOT NULL, nome_chave TEXT NOT NULL UNIQUE, preco INTEGER NOT NULL)',
@@ -22,11 +25,15 @@ export function criarRepositorioDoCardapio(banco: DatabaseSync) {
       return { id: Number(resultado.lastInsertRowid), nome, preco };
     },
     listar(): ItemDoCardapio[] {
-      return banco.prepare('SELECT id, nome, preco FROM itens_do_cardapio ORDER BY id').all() as ItemDoCardapio[];
+      const linhas = banco
+        .prepare('SELECT id, nome, preco FROM itens_do_cardapio ORDER BY id')
+        .all() as ItemDoCardapio[];
+      return linhas.map(paraItem);
     },
     buscarPorId(id: number): ItemDoCardapio | undefined {
-      return banco.prepare('SELECT id, nome, preco FROM itens_do_cardapio WHERE id = ?').get(id) as
+      const linha = banco.prepare('SELECT id, nome, preco FROM itens_do_cardapio WHERE id = ?').get(id) as
         ItemDoCardapio | undefined;
+      return linha && paraItem(linha);
     },
   };
 }
