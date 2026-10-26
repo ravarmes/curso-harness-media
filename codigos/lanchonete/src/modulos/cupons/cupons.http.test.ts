@@ -89,3 +89,29 @@ test('POST /cupons recusa código repetido com 409', () =>
       corpo: { erro: 'já existe um cupom com esse código' },
     });
   }));
+
+test('GET /cupons/:codigo devolve o cupom', () =>
+  comApp(async (pedir) => {
+    await pedir('POST', '/cupons', { codigo: 'BEMVINDO10', percentual: 10 });
+    assert.deepEqual(await pedir('GET', '/cupons/BEMVINDO10'), {
+      status: 200,
+      corpo: { id: 1, codigo: 'BEMVINDO10', percentual: 10 },
+    });
+  }));
+
+test('GET /cupons/:codigo ignora maiúsculas e minúsculas', () =>
+  comApp(async (pedir) => {
+    await pedir('POST', '/cupons', { codigo: 'BEMVINDO10', percentual: 10 });
+    assert.deepEqual(await pedir('GET', '/cupons/bemvindo10'), {
+      status: 200,
+      corpo: { id: 1, codigo: 'BEMVINDO10', percentual: 10 },
+    });
+  }));
+
+test('GET /cupons/:codigo recusa código inexistente com 404', () =>
+  comApp(async (pedir) => {
+    assert.deepEqual(await pedir('GET', '/cupons/INEXISTENTE'), {
+      status: 404,
+      corpo: { erro: 'cupom não encontrado' },
+    });
+  }));

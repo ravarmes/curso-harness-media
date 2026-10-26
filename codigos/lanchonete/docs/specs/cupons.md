@@ -22,9 +22,9 @@ Também: `cupons/repositorio.ts`, `cupons/index.ts` e registro em `src/app.ts`.
 - [x] `POST /cupons` com `codigo` contendo caracteres fora de letras, números e hífen (ex.: `DEZ POR CENTO`) → 400 `{ erro: 'código aceita só letras, números e hífen' }` (fatia 1)
 - [x] `POST /cupons` com `percentual` ausente, texto, decimal (`7.5`), `0`, negativo ou `101` → 400 `{ erro: 'percentual deve ser um inteiro de 1 a 100' }` (fatia 1)
 - [x] `POST /cupons` com código já cadastrado (ignorando maiúsculas/minúsculas, ex.: `bemvindo10`) → 409 `{ erro: 'já existe um cupom com esse código' }` e o percentual do cupom original não muda (fatia 1)
-- [ ] `GET /cupons/BEMVINDO10` de cupom existente → 200 com `{ id: 1, codigo: 'BEMVINDO10', percentual: 10 }` (fatia 2)
-- [ ] `GET /cupons/bemvindo10` (minúsculas) → 200 com o mesmo cupom (fatia 2)
-- [ ] `GET /cupons/INEXISTENTE` → 404 `{ erro: 'cupom não encontrado' }` (fatia 2)
+- [x] `GET /cupons/BEMVINDO10` de cupom existente → 200 com `{ id: 1, codigo: 'BEMVINDO10', percentual: 10 }` (fatia 2)
+- [x] `GET /cupons/bemvindo10` (minúsculas) → 200 com o mesmo cupom (fatia 2)
+- [x] `GET /cupons/INEXISTENTE` → 404 `{ erro: 'cupom não encontrado' }` (fatia 2)
 
 ## Suposições
 
