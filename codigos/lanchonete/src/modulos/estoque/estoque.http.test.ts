@@ -126,3 +126,41 @@ test('POST /estoque/:id/reposicao recusa ingrediente inexistente com 404', () =>
       });
     }
   }));
+
+test('GET /estoque com banco vazio devolve 200 e lista vazia', () =>
+  comApp(async (pedir) => {
+    assert.deepEqual(await pedir('GET', '/estoque'), { status: 200, corpo: [] });
+  }));
+
+test('GET /estoque devolve os ingredientes em ordem de id', () =>
+  comApp(async (pedir) => {
+    await pedir('POST', '/estoque', { nome: 'Pão', quantidade: 30 });
+    await pedir('POST', '/estoque', { nome: 'Carne (g)', quantidade: 500 });
+    assert.deepEqual(await pedir('GET', '/estoque'), {
+      status: 200,
+      corpo: [
+        { id: 1, nome: 'Pão', quantidade: 30 },
+        { id: 2, nome: 'Carne (g)', quantidade: 500 },
+      ],
+    });
+  }));
+
+test('GET /estoque/1 devolve o ingrediente com as reposições', () =>
+  comApp(async (pedir) => {
+    await pedir('POST', '/estoque', { nome: 'Carne (g)', quantidade: 500 });
+    await pedir('POST', '/estoque/1/reposicao', { quantidade: 100 });
+    assert.deepEqual(await pedir('GET', '/estoque/1'), {
+      status: 200,
+      corpo: { id: 1, nome: 'Carne (g)', quantidade: 600 },
+    });
+  }));
+
+test('GET /estoque/:id recusa ingrediente inexistente com 404', () =>
+  comApp(async (pedir) => {
+    for (const id of ['999', 'abc']) {
+      assert.deepEqual(await pedir('GET', `/estoque/${id}`), {
+        status: 404,
+        corpo: { erro: 'ingrediente não encontrado' },
+      });
+    }
+  }));

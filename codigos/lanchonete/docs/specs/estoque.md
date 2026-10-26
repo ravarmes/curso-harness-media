@@ -27,10 +27,10 @@ Também: `estoque/repositorio.ts`, `estoque/index.ts` e registro em `src/app.ts`
 - [x] Duas reposições seguidas (100 e 50) sobre ingrediente com 0 → quantidade final 150 (fatia 2)
 - [x] `POST /estoque/1/reposicao` com `quantidade` ausente, texto, decimal, zero ou negativa → 400 `{ erro: 'quantidade deve ser um inteiro positivo' }` e o estoque não muda (fatia 2)
 - [x] `POST /estoque/999/reposicao` ou `/estoque/abc/reposicao` → 404 `{ erro: 'ingrediente não encontrado' }` (fatia 2)
-- [ ] `GET /estoque` com banco vazio → 200 `[]` (fatia 3)
-- [ ] `GET /estoque` após cadastrar dois ingredientes → 200 com os dois, em ordem de id (fatia 3)
-- [ ] `GET /estoque/1` de ingrediente existente → 200 com `{ id: 1, nome, quantidade }` refletindo reposições (fatia 4)
-- [ ] `GET /estoque/999` ou `/estoque/abc` → 404 `{ erro: 'ingrediente não encontrado' }` (fatia 4)
+- [x] `GET /estoque` com banco vazio → 200 `[]` (fatia 3)
+- [x] `GET /estoque` após cadastrar dois ingredientes → 200 com os dois, em ordem de id (fatia 3)
+- [x] `GET /estoque/1` de ingrediente existente → 200 com `{ id: 1, nome, quantidade }` refletindo reposições (fatia 4)
+- [x] `GET /estoque/999` ou `/estoque/abc` → 404 `{ erro: 'ingrediente não encontrado' }` (fatia 4)
 
 ## Suposições
 
