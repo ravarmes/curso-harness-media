@@ -1,0 +1,10 @@
+[
+  { "id": "F1", "descricao": "Cardápio: cadastrar, listar e consultar itens com nome e preço", "passa": false },
+  { "id": "F2", "descricao": "Estoque: cadastrar ingredientes com quantidade, repor e consultar o estoque", "passa": false },
+  { "id": "F3", "descricao": "Receita do item: definir quais ingredientes e quantidades cada item do cardápio consome", "passa": false },
+  { "id": "F4", "descricao": "Bairros: cadastrar bairros com a taxa de entrega e consultar a taxa", "passa": false },
+  { "id": "F5", "descricao": "Cupons: cadastrar cupons de desconto e consultar", "passa": false },
+  { "id": "F6", "descricao": "Pedido: criar pedido com itens e quantidades, aceito só dentro do horário (11h às 23h) e só se houver estoque para todos os itens; ao confirmar baixa o estoque; total com taxa do bairro", "passa": false },
+  { "id": "F7", "descricao": "Cupom no pedido: aplicar desconto no pedido, valendo uma vez por cliente", "passa": false },
+  { "id": "F8", "descricao": "Consultar pedido: ver itens, desconto, taxa e total de um pedido", "passa": false }
+]
