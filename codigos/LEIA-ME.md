@@ -10,8 +10,8 @@ Esta branch é o estado do código no fim da prática guiada do capítulo 7. Ela
 | 3 | A skill `implementar` despacha o verificador depois do revisor (no máximo duas verificações) |
 | 4 | `mcp__api-local` na lista de permitir de `settings-usuario.json` |
 | 5 | Os horários livres de um profissional, **commit do próprio agente** na rodada: a especificação e `GET /profissionais/:id/horarios-livres/:data` |
-| 6 | O diário: F06 resolvida no que passa pela API; F16, F17 e F18 novas |
-| 7 | Este guia |
+| 6 e 7 | O diário: F06 resolvida no que passa pela API; F16 a F19 novas |
+| 8 | Este guia |
 
 O commit 5 aparece com o autor "Aluno do curso": é a identidade da pasta em que o agente
 trabalhou, e a mensagem é a dele.
@@ -64,4 +64,4 @@ Repare em três coisas na sua. A `implementar` despachou o verificador depois do
 nome da especificação? Cada linha do relatório dele corresponde a uma chamada que aparece na
 sessão? E o que ele marcou como não verificável, e por quê? O nosso aprovou os horários livres
 com três ressalvas, todas por causa do relógio, que a API não deixa fixar; na provocação, achou
-os dois defeitos pela API, e o agente principal os corrigiu sem que ninguém pedisse.
+os dois defeitos pela API, e o agente principal descartou as alterações pendentes sem que ninguém pedisse.
