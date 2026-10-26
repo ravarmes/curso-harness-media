@@ -201,3 +201,19 @@ quebra, e duas chamadas em paralelo dividem o mesmo arquivo); o `api-local` sem 
 `reiniciar_api` ao mesmo tempo, e com um `parar` que pode travar no macOS e no Linux quando a API
 morre por sinal; e o `iniciar.mjs`, que deixa o projeto pela metade quando um passo falha depois da
 cópia.
+
+## Nota do projeto final
+
+- A lanchonete, de uma pasta vazia: a `especificar` passou a vez para a `iniciar-projeto`, que criou
+  o projeto do modelo e dividiu o pedido em oito funcionalidades. Sete sessões, uma por
+  funcionalidade (F1 a F7); a F8 ficou para a próxima.
+- As quatro armadilhas previstas não aconteceram, e por um motivo só: estavam nos critérios de
+  aceite que a `especificar` escreveu (preço em centavos inteiros, consumo somado entre itens, cupom
+  uma vez por cliente, a recusa às 23:00:00 em ponto), com teste e, a do estoque, conferida pelo
+  verificador. Conferimos as quatro pela API, com o relógio fixado.
+- O revisor barrou a F1 uma vez: nenhum teste passava pelas rotas HTTP. O agente escreveu os testes,
+  e a segunda revisão aprovou.
+- Numa sessão, o agente criou um arquivo temporário na raiz do projeto, contra a instrução do
+  `scratch/`, e o apagou antes do commit. Uma vez só: fica como observação.
+- Sem cadastro de clientes, `ana` e `ANA` são clientes diferentes, e o mesmo cupom vale para os
+  dois. É uma decisão da especificação, registrada nas suposições, e não uma armadilha que passou.
