@@ -107,3 +107,29 @@ test('PUT /cardapio/:id/receita de item inexistente devolve 404', () =>
       });
     }
   }));
+
+test('GET /cardapio/:id/receita devolve a receita definida', () =>
+  comApp(async (pedir) => {
+    await prepararCenario(pedir);
+    await pedir('PUT', '/cardapio/1/receita', corpoCompleto);
+    assert.deepEqual(await pedir('GET', '/cardapio/1/receita'), { status: 200, corpo: receitaCompleta });
+  }));
+
+test('GET /cardapio/:id/receita de item sem receita devolve lista vazia', () =>
+  comApp(async (pedir) => {
+    await prepararCenario(pedir);
+    assert.deepEqual(await pedir('GET', '/cardapio/1/receita'), {
+      status: 200,
+      corpo: { itemId: 1, ingredientes: [] },
+    });
+  }));
+
+test('GET /cardapio/:id/receita de item inexistente devolve 404', () =>
+  comApp(async (pedir) => {
+    for (const id of ['999', 'abc']) {
+      assert.deepEqual(await pedir('GET', `/cardapio/${id}/receita`), {
+        status: 404,
+        corpo: { erro: 'item não encontrado' },
+      });
+    }
+  }));

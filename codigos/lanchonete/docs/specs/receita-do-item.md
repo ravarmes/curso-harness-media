@@ -25,9 +25,9 @@ Pré-condição dos exemplos: item 1 `X-Burger` no cardápio; ingredientes 1 `P�
 - [x] `PUT` com o mesmo `ingredienteId` duas vezes → 400 `{ erro: 'ingrediente repetido na receita' }` (fatia 1)
 - [x] `PUT` com `ingredienteId: 999` → 400 `{ erro: 'ingrediente 999 não encontrado' }` e a receita anterior não muda (fatia 1)
 - [x] `PUT /cardapio/999/receita` ou `/cardapio/abc/receita` com corpo válido → 404 `{ erro: 'item não encontrado' }` (fatia 1)
-- [ ] `GET /cardapio/1/receita` após o primeiro `PUT` → 200 com a mesma receita, com o nome atual dos ingredientes (fatia 2)
-- [ ] `GET /cardapio/1/receita` de item existente sem receita definida → 200 `{ itemId: 1, ingredientes: [] }` (fatia 2)
-- [ ] `GET /cardapio/999/receita` ou `/cardapio/abc/receita` → 404 `{ erro: 'item não encontrado' }` (fatia 2)
+- [x] `GET /cardapio/1/receita` após o primeiro `PUT` → 200 com a mesma receita, com o nome atual dos ingredientes (fatia 2)
+- [x] `GET /cardapio/1/receita` de item existente sem receita definida → 200 `{ itemId: 1, ingredientes: [] }` (fatia 2)
+- [x] `GET /cardapio/999/receita` ou `/cardapio/abc/receita` → 404 `{ erro: 'item não encontrado' }` (fatia 2)
 
 ## Suposições
 
