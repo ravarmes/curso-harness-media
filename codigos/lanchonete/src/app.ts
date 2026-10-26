@@ -1,5 +1,6 @@
 import { abrirBanco } from './compartilhado/banco.ts';
 import { criarServidor } from './compartilhado/http.ts';
+import { moduloBairros } from './modulos/bairros/index.ts';
 import { moduloCardapio } from './modulos/cardapio/index.ts';
 import { moduloEstoque } from './modulos/estoque/index.ts';
 import { moduloNotas } from './modulos/notas/index.ts';
@@ -9,9 +10,16 @@ import { moduloReceitas } from './modulos/receitas/index.ts';
 export function criarApp(banco = abrirBanco()) {
   const cardapio = moduloCardapio(banco);
   const estoque = moduloEstoque(banco);
+  const bairros = moduloBairros(banco);
   const receitas = moduloReceitas(banco, {
     existeItem: cardapio.existeItem,
     nomeDoIngrediente: estoque.nomeDoIngrediente,
   });
-  return criarServidor([...moduloNotas(banco).rotas, ...cardapio.rotas, ...estoque.rotas, ...receitas.rotas]);
+  return criarServidor([
+    ...moduloNotas(banco).rotas,
+    ...bairros.rotas,
+    ...cardapio.rotas,
+    ...estoque.rotas,
+    ...receitas.rotas,
+  ]);
 }
