@@ -1,4 +1,4 @@
-# Diário de falhas
+# Diário de cap08 (o formatador retrata os pendentes antes de cada comando e formata, depois, só o que o comando mudou) cap08 (instrução global: relatar e perguntar) cap08 (aceita redirecionamento e variável na frente; a mensagem dá a forma do Git Bash) cap08 (APROVADO, com ressalvas) cap08 (a descrição do verificador diz que ele sobe a própria API) cap08 (git checkout --, git restore e git clean na lista ask; instrução global) ||||||falhas
 
 Uma linha por falha observada. "Controle que faltou" diz que tipo
 de controle teria evitado a falha (guia, sensor ou barreira;
@@ -20,12 +20,14 @@ capítulo resolvê-la.
 | F11 | cap02 | Para desligar o servidor de teste dele, encerrou todos os processos Node da máquina (`taskkill //F //IM node.exe`) | Parar o próprio processo pelo número (PID) | Barreira computacional | cap05 |
 | F12 | cap03 | Disse que a consulta que atravessa a meia-noite passa se o dia seguinte tiver expediente; o código recusa toda consulta que passa da meia-noite, e o teste dele só confere o lado da recusa | Testar o que afirma, os dois lados da regra | Sensor inferencial (revisor e verificador) | cap06 (o revisor cobra o valor exato da fronteira) |
 | F13 | cap04 | Viu o teste falhar pelo motivo errado (o método ou o arquivo ainda não existiam) e seguiu para o código, contra o passo 2 da implementar; contou isso no relatório | Ver o teste falhar na asserção do critério antes de escrever o código | Guia inferencial existia; sensor inferencial (revisor do processo) | |
-| F14 | cap05 | Escreveu os arquivos pelo terminal (`cat > arquivo`), e o formatador, ligado a Edit e Write, não viu; no fim, rodou o Prettier no projeto inteiro e mexeu no fim de linha de 47 arquivos fora da tarefa | Escrever pelas ferramentas de arquivo, ou o formatador alcançar o que muda por qualquer caminho | Sensor computacional (o hook olhava um caminho de escrita só) | |
-| F15 | cap06 | Pedido só de revisão ("Revise a fatia de bloqueio por faltas"); despachou o revisor e corrigiu os cinco achados sem perguntar, sem uma segunda revisão | Relatar os achados e perguntar antes de corrigir | Guia inferencial (o que fazer quando o pedido é revisar) | |
-| F16 | cap07 | Para parar o servidor de teste dele, tentou `taskkill //PID 9728 //F >/dev/null && …` e `MSYS_NO_PATHCONV=1 taskkill /PID 9728 /F`, e o hook `encerrar-pelo-pid` negou as duas, que são pelo número; o `kill 9728` que a mensagem do hook sugere não alcança um processo do Windows no Git Bash | O hook aceitar o número em qualquer forma de escrever, e a mensagem dar a forma que funciona no Git Bash (`taskkill //PID <pid> //F`) | Barreira computacional (casa o texto do comando e errou nas bordas) | |
-| F17 | cap07 | Com critério que a API não deixa exercitar (a margem de 1 minuto, que depende do relógio), o verificador deu APROVADO com ressalva em três verificações e REPROVADO em outra | O veredito seguir uma regra só para o critério não verificável | Guia inferencial (as instruções do verificador não dizem o que o não verificável faz com o veredito) | |
-| F18 | cap07 | Antes de despachar o verificador, que sobe a própria API, subiu a API com `npm run dev`; no fim, disse que ela não estava mais no ar, e três processos dela seguiam rodando | Deixar a API com o verificador, e conferir antes de afirmar que um processo parou | Guia inferencial (a descrição do verificador, "confere, com a API rodando", sugere subir a API antes) + sensor computacional (nada confere o que fica no ar) | |
-| F19 | cap07 | Pedido só de verificação; achou quatro alterações não registradas no projeto e as descartou com `git checkout --` sem perguntar, e só depois avisou que "o descarte apagou essas alterações" | Mostrar as alterações e perguntar antes de descartar trabalho que não é dele | Barreira computacional (a lista de negar cobre `git reset --hard`, mas não `git checkout --` nem `git restore`) + guia inferencial (F15) | |
+| F14 | cap05 | Escreveu os arquivos pelo terminal (`cat > arquivo`), e o formatador, ligado a Edit e Write, não viu; no fim, rodou o Prettier no projeto inteiro e mexeu no fim de linha de 47 arquivos fora da tarefa | Escrever pelas ferramentas de arquivo, ou o formatador alcançar o que muda por qualquer caminho | Sensor computacional (o hook olhava um caminho de escrita só) | cap08 (o formatador retrata os pendentes antes de cada comando e formata, depois, só o que o comando mudou) |
+| F15 | cap06 | Pedido só de revisão ("Revise a fatia de bloqueio por faltas"); despachou o revisor e corrigiu os cinco achados sem perguntar, sem uma segunda revisão | Relatar os achados e perguntar antes de corrigir | Guia inferencial (o que fazer quando o pedido é revisar) | cap08 (instrução global: relatar e perguntar) |
+| F16 | cap07 | Para parar o servidor de teste dele, tentou `taskkill //PID 9728 //F >/dev/null && …` e `MSYS_NO_PATHCONV=1 taskkill /PID 9728 /F`, e o hook `encerrar-pelo-pid` negou as duas, que são pelo número; o `kill 9728` que a mensagem do hook sugere não alcança um processo do Windows no Git Bash | O hook aceitar o número em qualquer forma de escrever, e a mensagem dar a forma que funciona no Git Bash (`taskkill //PID <pid> //F`) | Barreira computacional (casa o texto do comando e errou nas bordas) | cap08 (aceita redirecionamento e variável na frente; a mensagem dá a forma do Git Bash) |
+| F17 | cap07 | Com critério que a API não deixa exercitar (a margem de 1 minuto, que depende do relógio), o verificador deu APROVADO com ressalva em três verificações e REPROVADO em outra | O veredito seguir uma regra só para o critério não verificável | Guia inferencial (as instruções do verificador não dizem o que o não verificável faz com o veredito) | cap08 (APROVADO, com ressalvas) |
+| F18 | cap07 | Antes de despachar o verificador, que sobe a própria API, subiu a API com `npm run dev`; no fim, disse que ela não estava mais no ar, e três processos dela seguiam rodando | Deixar a API com o verificador, e conferir antes de afirmar que um processo parou | Guia inferencial (a descrição do verificador, "confere, com a API rodando", sugere subir a API antes) + sensor computacional (nada confere o que fica no ar) | cap08 (a descrição do verificador diz que ele sobe a própria API) |
+| F19 | cap07 | Pedido só de verificação; achou quatro alterações não registradas no projeto e as descartou com `git checkout --` sem perguntar, e só depois avisou que "o descarte apagou essas alterações" | Mostrar as alterações e perguntar antes de descartar trabalho que não é dele | Barreira computacional (a lista de negar cobre `git reset --hard`, mas não `git checkout --` nem `git restore`) + guia inferencial (F15) | cap08 (git checkout --, git restore e git clean na lista ask; instrução global) |
+| F20 | cap08 | A descrição da `implementar` não carregava desde o cap. 4: o `: ` de "Status: aprovada" quebra o YAML do cabeçalho, e a skill aparecia no `/context` com menos de 20 tokens; ela só rodava porque a `especificar` a chama pelo nome. Nenhuma rodada acusou, nem o `claude plugin validate` | O cabeçalho de toda skill ser lido como YAML antes de valer | Sensor computacional (nada lia o cabeçalho das skills) | cap08 (descrição reescrita; o `/context` lista a skill com cerca de 120 tokens) |
+| F21 | cap08 | O pedido da fase 2 (remarcar, lista de espera com aviso, relatório) disparou a `especificar`, e não a `iniciar-projeto`: uma especificação só, com sete fatias e dois módulos novos. Com a regra das seis fatias, o agente espremeu as três funcionalidades em cinco fatias e 29 critérios | Dividir o pedido numa lista, uma funcionalidade por sessão | Guia inferencial (a `especificar` não sabia quando um pedido é grande demais, e um limite numérico se contorna) | cap08 (o primeiro passo da `especificar` conta as funcionalidades; na terceira rodada, a lista saiu com quatro) |
 
 ## Nota da rodada cap01
 
@@ -151,3 +153,30 @@ capítulo resolvê-la.
 - F06: o relatório final passou a trazer o comportamento medido pelo verificador, chamada
   por chamada. Uma afirmação sobre outra coisa, como um processo parado, continua sem sensor
   (F18).
+
+## Nota da rodada cap08
+
+- Plugin: catálogo local e install, com os links provisórios fora. O `/context` de uma sessão nova
+  mostrou 18,2 mil tokens: os três agentes e as skills com o prefixo `meu-harness:`, o servidor
+  como `plugin:meu-harness:api-local` (94 tokens de instruções; as três ferramentas, 600, adiadas).
+  Faltava a `implementar` (F20). As sessões leram o plugin da pasta do `meu-harness`, e não da cópia
+  que a instalação guarda.
+- Fase 2: três rodadas do mesmo pedido até a lista (F21). Na terceira, a `especificar` passou a vez
+  para a `iniciar-projeto`, que escreveu `docs/funcionalidades.json` com quatro funcionalidades e
+  parou para a aprovação.
+- Sessões 1 a 3: uma funcionalidade cada (F1 remarcar, F2 relatório de ocupação, F3 lista de
+  espera), cada uma aberta pelo `retomar.mjs` com a contagem e a última entrada do progresso
+  ("1 de 4", "2 de 4"). Em todas: especificação com perguntas, teste vermelho pela asserção (F13
+  seguida), commits por fatia com o `verify` passando, revisor e verificador aprovando, `"passa":
+  true` e uma entrada nova no progresso. A F4 (aviso de vaga) ficou para a próxima sessão.
+- F14 medida: nas sessões 1 a 3, o formatador formatou o que 15 comandos de terminal escreveram.
+  Efeito colateral: na sessão 3, um arquivo escrito pelo terminal no cap. 7, antes da correção, foi
+  formatado inteiro quando o agente mudou um import dele, e o revisor apontou a mudança fora do
+  assunto. O remédio de sempre: formatar o projeto uma vez, num commit só de formatação.
+- F15 e F19 medidas: a provocação do cap. 7, refeita sobre a cap-08. O verificador reprovou pelos
+  dois defeitos, e o agente escreveu "Não corrigi nada, porque o pedido era verificar" e perguntou;
+  as alterações plantadas continuaram pendentes.
+- F17 e F18: o verificador deu "APROVADO, com ressalvas" para os critérios que dependem do relógio,
+  e ninguém subiu a API antes de despachá-lo. Ele continua reiniciando a API menos vezes do que as
+  instruções pedem, e numa sessão notou, fora da especificação, que a API aceita agendar no passado.
+- F13 segue aberta: seguida em todas as sessões, mas nenhum sensor confere o processo.
