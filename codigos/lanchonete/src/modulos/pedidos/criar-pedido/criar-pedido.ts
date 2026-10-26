@@ -25,7 +25,7 @@ function estaAberto(agora: Date): boolean {
 // e, por fim, o estoque. Só com tudo válido o estoque é baixado e o pedido
 // gravado, na mesma transação.
 export function criarPedido(
-  repo: Pick<RepositorioDePedidos, 'transacao' | 'inserir'>,
+  repo: Pick<RepositorioDePedidos, 'transacao' | 'inserir' | 'clienteJaUsouCupom'>,
   deps: Dependencias,
   corpo: unknown,
 ): ResultadoCriarPedido {
@@ -33,11 +33,19 @@ export function criarPedido(
     clienteId?: unknown;
     bairroId?: unknown;
     itens?: unknown;
+    cupom?: unknown;
   };
   const clienteId = typeof dados.clienteId === 'string' ? dados.clienteId.trim() : '';
   if (clienteId === '') return invalido('clienteId deve ser um texto não vazio');
   const bairroId = dados.bairroId;
   if (!ehInteiro(bairroId)) return invalido('bairroId deve ser um inteiro');
+  let codigoDoCupom: string | undefined;
+  if (dados.cupom !== undefined) {
+    if (typeof dados.cupom !== 'string' || dados.cupom.trim() === '') {
+      return invalido('cupom deve ser um texto não vazio');
+    }
+    codigoDoCupom = dados.cupom.trim().toUpperCase();
+  }
   if (!Array.isArray(dados.itens) || dados.itens.length === 0) return invalido('pedido deve ter ao menos um item');
 
   const pedidos: { itemId: number; quantidade: number }[] = [];
@@ -71,6 +79,13 @@ export function criarPedido(
     itens.push({ itemId, quantidade, precoUnitario });
   }
 
+  let cupom: { id: number; codigo: string; percentual: number } | undefined;
+  if (codigoDoCupom !== undefined) {
+    cupom = deps.cupomPorCodigo(codigoDoCupom);
+    if (cupom === undefined) return invalido(`cupom ${codigoDoCupom} não encontrado`);
+    if (repo.clienteJaUsouCupom(clienteId, cupom.id)) return recusado('cupom já usado por este cliente');
+  }
+
   const consumos: Consumo[] = [...consumoTotal]
     .map(([ingredienteId, quantidade]) => ({ ingredienteId, quantidade }))
     .sort((a, b) => a.ingredienteId - b.ingredienteId);
@@ -82,9 +97,22 @@ export function criarPedido(
   }
 
   const subtotal = itens.reduce((soma, i) => soma + i.precoUnitario * i.quantidade, 0);
+  const desconto = cupom === undefined ? 0 : Math.floor((subtotal * cupom.percentual) / 100);
   const pedido = repo.transacao(() => {
     deps.baixarEstoque(consumos);
-    return repo.inserir({ clienteId, bairroId, itens, subtotal, taxa, total: subtotal + taxa });
+    return repo.inserir(
+      {
+        clienteId,
+        bairroId,
+        itens,
+        cupom: cupom?.codigo ?? null,
+        subtotal,
+        desconto,
+        taxa,
+        total: subtotal - desconto + taxa,
+      },
+      cupom?.id ?? null,
+    );
   });
   return { ok: true, pedido };
 }

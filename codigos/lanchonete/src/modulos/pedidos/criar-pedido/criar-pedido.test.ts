@@ -16,6 +16,11 @@ const RECEITAS: Record<number, { ingredienteId: number; quantidade: number }[]> 
   4: [{ ingredienteId: 1, quantidade: 1 }],
 };
 const TAXAS: Record<number, number> = { 1: 500, 2: 0 };
+const CUPONS: Record<string, { id: number; codigo: string; percentual: number }> = {
+  BEMVINDO10: { id: 1, codigo: 'BEMVINDO10', percentual: 10 },
+  TUDO: { id: 2, codigo: 'TUDO', percentual: 100 },
+  QUINZE: { id: 3, codigo: 'QUINZE', percentual: 15 },
+};
 const ESTOQUE_INICIAL = { 1: 10, 2: 1000, 3: 5 };
 
 // Cenário: estoque Pão 10, Carne 1000, Refrigerante 5; relógio às 12:00 de Brasília.
@@ -27,6 +32,7 @@ function cenario(hora = '2026-10-25T15:00:00Z') {
     agora: () => new Date(hora),
     precoDoItem: (id: number) => PRECOS[id],
     taxaDoBairro: (id: number) => TAXAS[id],
+    cupomPorCodigo: (codigo: string) => CUPONS[codigo],
     receitaDoItem: (id: number) => RECEITAS[id] ?? [],
     ingredienteNoEstoque: (id: number) =>
       NOMES[id] === undefined ? undefined : { nome: NOMES[id], quantidade: estoque[id] },
@@ -61,7 +67,9 @@ test('cria o pedido com subtotal, taxa e total, itens em ordem de itemId, e baix
         { itemId: 1, quantidade: 2, precoUnitario: 2250 },
         { itemId: 2, quantidade: 1, precoUnitario: 600 },
       ],
+      cupom: null,
       subtotal: 5100,
+      desconto: 0,
       taxa: 500,
       total: 5600,
     },
@@ -227,4 +235,108 @@ test('corpo que não é objeto: 400 pela primeira regra do corpo', () => {
   for (const c of [undefined, null, 'x', 5, []]) {
     assert.deepEqual(criarPedido(repo, deps, c), invalido('clienteId deve ser um texto não vazio'));
   }
+});
+
+const UM_BURGER = [{ itemId: 1, quantidade: 1 }];
+
+test('cupom: desconto sobre o subtotal, sem descontar a taxa', () => {
+  const { repo, deps } = cenario();
+  const r = criarPedido(repo, deps, corpo({ cupom: 'BEMVINDO10' }));
+  assert.ok(r.ok);
+  assert.deepEqual(
+    [r.pedido.cupom, r.pedido.subtotal, r.pedido.desconto, r.pedido.taxa, r.pedido.total],
+    ['BEMVINDO10', 5100, 510, 500, 5090],
+  );
+});
+
+test('cupom: apara e põe em maiúsculas', () => {
+  const { repo, deps } = cenario();
+  const r = criarPedido(repo, deps, corpo({ cupom: '  bemvindo10  ' }));
+  assert.ok(r.ok && r.pedido.cupom === 'BEMVINDO10');
+});
+
+test('cupom: desconto arredondado para baixo', () => {
+  const { repo, deps } = cenario();
+  const r = criarPedido(repo, deps, corpo({ cupom: 'QUINZE', itens: UM_BURGER }));
+  assert.ok(r.ok && r.pedido.desconto === 337 && r.pedido.total === 2413);
+});
+
+test('cupom de 100%: desconto igual ao subtotal e total igual à taxa', () => {
+  const { repo, deps } = cenario();
+  const r = criarPedido(repo, deps, corpo({ cupom: 'TUDO' }));
+  assert.ok(r.ok && r.pedido.desconto === r.pedido.subtotal && r.pedido.total === 500);
+});
+
+test('cupom com taxa 0: total = subtotal - desconto, desconto igual ao de taxa 500', () => {
+  const { repo, deps } = cenario();
+  const r = criarPedido(repo, deps, corpo({ cupom: 'BEMVINDO10', bairroId: 2 }));
+  assert.ok(r.ok && r.pedido.desconto === 510 && r.pedido.total === 4590);
+});
+
+test('cupom: segundo uso pelo mesmo cliente é recusado, sem baixar estoque', () => {
+  const { repo, deps, estoque } = cenario();
+  assert.ok(criarPedido(repo, deps, corpo({ cupom: 'BEMVINDO10', itens: UM_BURGER })).ok);
+  const antes = { ...estoque };
+  assert.deepEqual(
+    criarPedido(repo, deps, corpo({ cupom: 'BEMVINDO10', itens: UM_BURGER })),
+    recusado('cupom já usado por este cliente'),
+  );
+  assert.deepEqual(estoque, antes);
+  const sem = criarPedido(repo, deps, corpo({ itens: UM_BURGER }));
+  assert.ok(sem.ok && sem.pedido.id === 2);
+});
+
+test('cupom: vale por cliente e por cupom, e pedido sem cupom segue livre', () => {
+  const { repo, deps } = cenario();
+  assert.ok(criarPedido(repo, deps, corpo({ cupom: 'BEMVINDO10', itens: UM_BURGER })).ok);
+  assert.ok(criarPedido(repo, deps, corpo({ cupom: 'BEMVINDO10', itens: UM_BURGER, clienteId: 'bia@ex.com' })).ok);
+  assert.ok(criarPedido(repo, deps, corpo({ cupom: 'TUDO', itens: UM_BURGER })).ok);
+  assert.ok(criarPedido(repo, deps, corpo({ itens: UM_BURGER })).ok);
+});
+
+test('cupom: clienteId é comparado já aparado', () => {
+  const { repo, deps } = cenario();
+  assert.ok(criarPedido(repo, deps, corpo({ cupom: 'TUDO', itens: UM_BURGER })).ok);
+  assert.deepEqual(
+    criarPedido(repo, deps, corpo({ cupom: 'TUDO', itens: UM_BURGER, clienteId: '  ana@ex.com  ' })),
+    recusado('cupom já usado por este cliente'),
+  );
+});
+
+test('cupom: pedido recusado não consome o cupom', () => {
+  const { repo, deps } = cenario();
+  const semEstoque = [{ itemId: 1, quantidade: 11 }];
+  assert.deepEqual(
+    criarPedido(repo, deps, corpo({ cupom: 'BEMVINDO10', itens: semEstoque })),
+    recusado('estoque insuficiente de Pão'),
+  );
+  assert.deepEqual(criarPedido(repo, deps, corpo({ cupom: 'BEMVINDO10', itens: [{ itemId: 999, quantidade: 1 }] })), invalido('item 999 não encontrado'));
+  assert.ok(criarPedido(repo, deps, corpo({ cupom: 'BEMVINDO10', itens: UM_BURGER })).ok);
+});
+
+test('cupom inexistente: 400 e estoque intacto', () => {
+  const { repo, deps, estoque } = cenario();
+  assert.deepEqual(criarPedido(repo, deps, corpo({ cupom: 'INEXISTENTE' })), invalido('cupom INEXISTENTE não encontrado'));
+  assert.deepEqual(estoque, ESTOQUE_INICIAL);
+});
+
+test('cupom que não é texto não vazio: 400', () => {
+  const { repo, deps } = cenario();
+  for (const cupom of [5, {}, [], null, '', '   ']) {
+    assert.deepEqual(criarPedido(repo, deps, corpo({ cupom })), invalido('cupom deve ser um texto não vazio'));
+  }
+});
+
+test('cupom: ordem das validações (horário antes do cupom; cupom usado antes do estoque)', () => {
+  const fora = cenario('2026-10-25T13:59:00Z');
+  assert.deepEqual(
+    criarPedido(fora.repo, fora.deps, corpo({ cupom: 'INEXISTENTE' })),
+    recusado('fora do horário de funcionamento (11h às 23h)'),
+  );
+  const { repo, deps } = cenario();
+  assert.ok(criarPedido(repo, deps, corpo({ cupom: 'TUDO', itens: UM_BURGER })).ok);
+  assert.deepEqual(
+    criarPedido(repo, deps, corpo({ cupom: 'TUDO', itens: [{ itemId: 1, quantidade: 11 }] })),
+    recusado('cupom já usado por este cliente'),
+  );
 });

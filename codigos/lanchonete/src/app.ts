@@ -23,6 +23,7 @@ export function criarApp(banco = abrirBanco(), agora = () => new Date()) {
     agora,
     precoDoItem: cardapio.precoDoItem,
     taxaDoBairro: bairros.taxaDoBairro,
+    cupomPorCodigo: cupons.cupomPorCodigo,
     receitaDoItem: receitas.receitaDoItem,
     ingredienteNoEstoque: estoque.ingredienteNoEstoque,
     baixarEstoque: estoque.baixarEstoque,

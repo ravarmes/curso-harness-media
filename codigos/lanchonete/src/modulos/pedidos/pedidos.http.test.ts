@@ -79,7 +79,9 @@ test('POST /pedidos cria o pedido, devolve 201 com o total e baixa o estoque', (
           { itemId: 1, quantidade: 2, precoUnitario: 2250 },
           { itemId: 2, quantidade: 1, precoUnitario: 600 },
         ],
+        cupom: null,
         subtotal: 5100,
+        desconto: 0,
         taxa: 500,
         total: 5600,
       },
@@ -155,5 +157,34 @@ test('POST /pedidos com JSON inválido ou sem corpo devolve 400', () =>
     assert.deepEqual(await pedir('POST', '/pedidos'), {
       status: 400,
       corpo: { erro: 'clienteId deve ser um texto não vazio' },
+    });
+  }));
+
+test('POST /pedidos com cupom desconta o subtotal e vale uma vez por cliente', () =>
+  comApp(async (pedir) => {
+    await prepararCenario(pedir);
+    await pedir('POST', '/cupons', { codigo: 'BEMVINDO10', percentual: 10 });
+    const resposta = await pedir('POST', '/pedidos', { ...pedidoBase, cupom: ' bemvindo10 ' });
+    assert.equal(resposta.status, 201);
+    assert.deepEqual(
+      resposta.corpo,
+      { id: 1, clienteId: 'ana@ex.com', bairroId: 1, itens: [
+        { itemId: 1, quantidade: 2, precoUnitario: 2250 },
+        { itemId: 2, quantidade: 1, precoUnitario: 600 },
+      ], cupom: 'BEMVINDO10', subtotal: 5100, desconto: 510, taxa: 500, total: 5090 },
+    );
+    assert.deepEqual(await pedir('POST', '/pedidos', { ...pedidoBase, cupom: 'BEMVINDO10' }), {
+      status: 409,
+      corpo: { erro: 'cupom já usado por este cliente' },
+    });
+    assert.deepEqual(await quantidades(pedir), [8, 700, 4]);
+    assert.equal((await pedir('POST', '/pedidos', { ...pedidoBase, cupom: 'BEMVINDO10', clienteId: 'bia@ex.com' })).status, 201);
+    assert.deepEqual(await pedir('POST', '/pedidos', { ...pedidoBase, cupom: 'NAO' }), {
+      status: 400,
+      corpo: { erro: 'cupom NAO não encontrado' },
+    });
+    assert.deepEqual(await pedir('POST', '/pedidos', { ...pedidoBase, cupom: 7 }), {
+      status: 400,
+      corpo: { erro: 'cupom deve ser um texto não vazio' },
     });
   }));
