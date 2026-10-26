@@ -10,21 +10,23 @@ Antes de escrever código, transforme o pedido numa especificação em
 
 ## Passos
 
-1. Leia o pedido, o `AGENTS.md` e, se existir, o guia de arquitetura do
+1. Uma especificação cobre uma funcionalidade. Se o pedido traz duas ou
+   mais, que o usuário veria como itens separados (por exemplo, "cadastro de
+   clientes e relatório de vendas"), não especifique: use a skill
+   `iniciar-projeto`, que divide o pedido numa lista para várias sessões, e
+   pare.
+2. Leia o pedido, o `AGENTS.md` e, se existir, o guia de arquitetura do
    projeto. Liste o que o pedido deixa em aberto.
-2. Separe as lacunas em dois grupos:
+3. Separe as lacunas em dois grupos:
    - **Pergunte** o que muda o comportamento visível ou a arquitetura:
      limites, regras de negócio, mensagens de erro, onde os dados ficam.
    - **Decida** o resto pelo padrão do projeto e registre a decisão em
      "Suposições".
-3. Divida a funcionalidade em fatias: uma por operação, no módulo dono da
-   regra.
-   Se passar de seis fatias, ou se o pedido junta funcionalidades que dão
-   uma sessão cada, não escreva a especificação: use a skill
-   `iniciar-projeto`, que divide o pedido numa lista para várias sessões, e
-   pare.
-4. Escreva a especificação no formato abaixo, com `Status: rascunho`.
-5. Mostre a especificação e pare. Quando o usuário aprovar, troque a linha
+4. Divida a funcionalidade em fatias: uma por operação, no módulo dono da
+   regra. Se passar de seis fatias, ela não cabe numa sessão: use a skill
+   `iniciar-projeto` e pare.
+5. Escreva a especificação no formato abaixo, com `Status: rascunho`.
+6. Mostre a especificação e pare. Quando o usuário aprovar, troque a linha
    para `Status: aprovada (<data>)`. Só implemente depois disso.
 
 ## Formato
