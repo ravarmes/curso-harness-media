@@ -3,7 +3,7 @@
 // escreveu (PreToolUse e PostToolUse em Bash|PowerShell). Silencioso de
 // propósito: não escreve nada, então não gasta contexto.
 import { existsSync, readFileSync, statSync, writeFileSync } from 'node:fs';
-import { basename, extname, join } from 'node:path';
+import { basename, extname, isAbsolute, join, relative, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { lerEntrada, responder } from './comum.mjs';
 
@@ -36,9 +36,18 @@ function formatar(arquivos) {
   return `formatou ${alvos.length} arquivo(s)`;
 }
 
+// Só o que fica dentro do projeto: um arquivo de fora (do meu-harness, por
+// exemplo) seria formatado com a configuração do projeto, que não é a dele.
+function dentroDoProjeto(caminho) {
+  const r = relative(entrada.cwd, resolve(entrada.cwd, caminho));
+  return r !== '' && !r.startsWith('..') && !isAbsolute(r);
+}
+
 let nota;
 const arquivo = entrada.tool_input?.file_path;
-if (arquivo) {
+if (arquivo && !dentroDoProjeto(arquivo)) {
+  nota = 'fora do projeto, não formata';
+} else if (arquivo) {
   // Edit ou Write: o arquivo que a ferramenta tocou.
   const antes = existsSync(arquivo) ? readFileSync(arquivo, 'utf8') : '';
   nota = formatar([arquivo]);

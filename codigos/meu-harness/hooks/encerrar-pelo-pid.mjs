@@ -4,31 +4,39 @@
 // agente derruba processos que não são dele.
 import { lerEntrada, responder } from './comum.mjs';
 
-// Um trecho que encerra processo...
-const ENCERRA = /\b(?:taskkill|tskill|pkill|killall|kill|stop-process|spps)\b|\.kill\s*\(/i;
+// Um trecho que encerra processo, inclusive pelo CIM e pelo WMI do Windows...
+const ENCERRA = /\b(?:taskkill|tskill|pkill|killall|kill|stop-process|spps|invoke-cimmethod|invoke-wmimethod|remove-ciminstance|remove-wmiobject|wmic)\b|\.(?:kill|terminate)\s*\(/i;
 // ...só passa numa destas formas, com o número escrito no comando.
 const PELO_PID = [
-  /^kill(?:\s+-\w+)?(?:\s+(?:\d+|\$!|%\d+))+$/i, // kill 4242, kill -9 4242, kill $!
+  /^kill(?:\s+-(?:s\s+)?\w+)?(?:\s+(?:\d+|\$!|%\d+))+$/i, // kill 4242, kill -9 4242, kill -s TERM 4242, kill $!
   /^(?:stop-process|spps|kill)(?:\s+-force)?\s+(?:-id\s+)?\d+(?:\s*,\s*\d+)*(?:\s+-force)?$/i, // Stop-Process -Id 4242
-  /^taskkill(?:\s+\/\/?[ft])*(?:\s+\/\/?pid\s+\d+(?:\s+\/\/?[ft])*)+$/i, // taskkill /PID 4242 /F
+  /^taskkill(?:\s+\/\/?[ft])*(?:\s+\/\/?pid\s+\d+(?:\s+\/\/?[ft])*)+$/i, // taskkill /PID 4242 /F (no Git Bash, //PID e //F)
 ];
+// O que pode vir depois sem mudar o alvo: redirecionamento e as opções de erro,
+// de confirmação e de saída do PowerShell.
+const CAUDA = /(?:\s+(?:\d?>>?\s*(?:&\d|\S+)|-erroraction\s+\w+|-ea\s+\w+|-confirm:\$false|-passthru))+$/i;
 // Busca e mensagem de commit só citam o nome.
-const SO_CITA = /^(?:grep|rg|findstr|select-string|git\s+(?:commit|grep|log|show|diff))\b/i;
-// powershell -Command "…", cmd /c "…" e bash -c '…' rodam o que está entre as aspas.
+const SO_CITA = /^(?:grep|egrep|fgrep|rg|findstr|select-string|sls|git\s+(?:commit|grep|log|show|diff))\b/i;
+// powershell -Command "…" (com opções antes, como -ExecutionPolicy Bypass), cmd /c "…"
+// e bash -c '…' rodam o que está entre as aspas; & { … } roda o que está no bloco.
 const EMBRULHO =
-  /\b(?:powershell|pwsh)(?:\.exe)?(?:\s+-\w+)*?\s+-(?:command|c)\s+(["'])(.*?)\1|\bcmd(?:\.exe)?\s+\/\/?c\s+(["'])(.*?)\3|\b(?:ba)?sh\s+-c\s+(["'])(.*?)\5/gi;
+  /\b(?:powershell|pwsh)(?:\.exe)?(?:\s+-(?!c\b|command\b)\w+(?:\s+[^\s"'-][^\s"']*)?)*?\s+-(?:command|c)\s+(["'])(.*?)\1|\bcmd(?:\.exe)?\s+\/\/?c\s+(["'])(.*?)\3|\b(?:ba)?sh\s+-c\s+(["'])(.*?)\5/gi;
+const BLOCO = /&\s*\{\s*([^{}]*?)\s*\}/g;
 
 const entrada = lerEntrada();
 // Cada comando de uma linha composta, e cada $(...) ou `...`, é um trecho. Do
-// trecho saem o que não muda o alvo: o redirecionamento no fim (>/dev/null,
-// 2>nul) e a variável na frente (MSYS_NO_PATHCONV=1).
-const trechos = String(entrada.tool_input?.command ?? '')
+// trecho sai a variável na frente (MSYS_NO_PATHCONV=1), que não muda o alvo.
+const comando = String(entrada.tool_input?.command ?? '')
   .replace(EMBRULHO, (_, a, ps, b, cmd, c, sh) => ps ?? cmd ?? sh)
+  .replace(BLOCO, '$1')
+  // Get-Process -Id <pid> | Stop-Process também é pelo número.
+  .replace(/\b(?:get-process|gps|ps)\s+-id\s+(\d+(?:\s*,\s*\d+)*)\s*\|\s*(?:stop-process|spps|kill)\b/gi, 'Stop-Process -Id $1');
+const trechos = comando
   .split(/&&|\|\||;|\||\n|\$\(|`/)
-  .map((t) => t.trim().replace(/\)+$/, '').replace(/(\s+\d?>>?\s*\S+)+$/, '').replace(/^(\w+=\S*\s+)+/, '').trim())
+  .map((t) => t.trim().replace(/\)+$/, '').replace(/^(\w+=\S*\s+)+/, '').trim())
   .filter(Boolean);
 const encerram = trechos.filter((t) => !SO_CITA.test(t) && ENCERRA.test(t));
-const proibido = encerram.find((t) => !PELO_PID.some((forma) => forma.test(t)));
+const proibido = encerram.find((t) => !PELO_PID.some((forma) => forma.test(t.replace(CAUDA, ''))));
 
 if (!encerram.length) responder('encerrar-pelo-pid', entrada, { nota: 'não encerra processo' });
 else if (!proibido) responder('encerrar-pelo-pid', entrada, { nota: 'encerra pelo PID; liberado' });
