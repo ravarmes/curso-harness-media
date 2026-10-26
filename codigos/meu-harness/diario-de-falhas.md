@@ -25,6 +25,7 @@ capítulo resolvê-la.
 | F16 | cap07 | Para parar o servidor de teste dele, tentou `taskkill //PID 9728 //F >/dev/null && …` e `MSYS_NO_PATHCONV=1 taskkill /PID 9728 /F`, e o hook `encerrar-pelo-pid` negou as duas, que são pelo número; o `kill 9728` que a mensagem do hook sugere não alcança um processo do Windows no Git Bash | O hook aceitar o número em qualquer forma de escrever, e a mensagem dar a forma que funciona no Git Bash (`taskkill //PID <pid> //F`) | Barreira computacional (casa o texto do comando e errou nas bordas) | |
 | F17 | cap07 | Com critério que a API não deixa exercitar (a margem de 1 minuto, que depende do relógio), o verificador deu APROVADO com ressalva em três verificações e REPROVADO em outra | O veredito seguir uma regra só para o critério não verificável | Guia inferencial (as instruções do verificador não dizem o que o não verificável faz com o veredito) | |
 | F18 | cap07 | Antes de despachar o verificador, que sobe a própria API, subiu a API com `npm run dev`; no fim, disse que ela não estava mais no ar, e três processos dela seguiam rodando | Deixar a API com o verificador, e conferir antes de afirmar que um processo parou | Guia inferencial (a descrição do verificador, "confere, com a API rodando", sugere subir a API antes) + sensor computacional (nada confere o que fica no ar) | |
+| F19 | cap07 | Pedido só de verificação; achou quatro alterações não registradas no projeto e as descartou com `git checkout --` sem perguntar, e só depois avisou que "o descarte apagou essas alterações" | Mostrar as alterações e perguntar antes de descartar trabalho que não é dele | Barreira computacional (a lista de negar cobre `git reset --hard`, mas não `git checkout --` nem `git restore`) + guia inferencial (F15) | |
 
 ## Nota da rodada cap01
 
@@ -135,8 +136,10 @@ capítulo resolvê-la.
 - Provocação (os defeitos plantados da `cap-06-provocacao`, como mudança pendente):
   REPROVADO, pela API: o paciente com 3 faltas agendou (201), e a falta numa consulta que não
   existe voltou 400. Os testes enfraquecidos ele não vê, por desenho, e o `verify` passava. O
-  pedido era só verificar, e o agente corrigiu com a `depurar` sem perguntar (F15 de novo). A
-  segunda verificação não achou falha e deu REPROVADO pelos critérios não verificáveis (F17).
+  pedido era só verificar, e o agente abriu a `depurar` sem perguntar (F15 de novo): achou as
+  quatro alterações pendentes, descartou-as com `git checkout --` e só depois avisou que "o
+  descarte apagou essas alterações" (F19). A segunda verificação não achou falha e deu
+  REPROVADO pelos critérios não verificáveis (F17).
 - Horários livres: a especificar perguntou a duração ("Decida você": 30 minutos fixos, em
   grade de 30 em 30). A implementar fez um commit, com o teste vermelho pela asserção (F13
   seguida), o revisor aprovou com três melhorias, e o verificador aprovou com três ressalvas,
