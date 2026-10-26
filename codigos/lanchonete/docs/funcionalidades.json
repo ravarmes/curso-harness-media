@@ -8,7 +8,7 @@
   {
     "id": "F3",
     "descricao": "Receita do item: definir quais ingredientes e quantidades cada item do cardápio consome",
-    "passa": false
+    "passa": true
   },
   { "id": "F4", "descricao": "Bairros: cadastrar bairros com a taxa de entrega e consultar a taxa", "passa": false },
   { "id": "F5", "descricao": "Cupons: cadastrar cupons de desconto e consultar", "passa": false },

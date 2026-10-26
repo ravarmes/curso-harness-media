@@ -17,3 +17,10 @@
 - Verificador: 14 de 14 critérios.
 - Verificação: `npm run verify` passando.
 - Próximo passo: F3, Receita do item.
+
+## 2026-10-25 — F3 Receita do item
+- Feito: módulo novo `receitas` com definir-receita (`PUT /cardapio/:id/receita`, substitui a receita inteira) e consultar-receita (`GET /cardapio/:id/receita`); `cardapio` e `estoque` passaram a expor `existeItem` e `nomeDoIngrediente` pelo `index.ts`, entregues a `receitas` pelo `app.ts`. Testes de regra e testes HTTP (`receitas.http.test.ts`).
+- Revisão: aprovada, sem bloqueios. Melhorias anotadas, não feitas: o texto `ingrediente N` em `consultar-receita.ts` para ingrediente que sumiu do estoque (hoje impossível, sem teste); testes HTTP sem os casos de `quantidade`/`ingredienteId` ausente, em texto ou decimal (cobertos nos testes de regra).
+- Verificador: 11 de 11 critérios.
+- Verificação: `npm run verify` passando.
+- Próximo passo: F4, Bairros.
