@@ -166,8 +166,8 @@ capítulo resolvê-la.
   parou para a aprovação.
 - Sessões 1 a 3: uma funcionalidade cada (F1 remarcar, F2 relatório de ocupação, F3 lista de
   espera), cada uma aberta pelo `retomar.mjs` com a contagem e a última entrada do progresso
-  ("1 de 4", "2 de 4"). Em todas: especificação com perguntas, teste vermelho pela asserção (F13
-  seguida), commits por fatia com o `verify` passando, revisor e verificador aprovando, `"passa":
+  ("1 de 4", "2 de 4"). Em todas: especificação antes do código (com perguntas nas duas primeiras;
+  na terceira, as decisões em "Suposições"), teste vermelho pela asserção (F13 seguida), commits por fatia com o `verify` passando, revisor e verificador aprovando, `"passa":
   true` e uma entrada nova no progresso. A F4 (aviso de vaga) ficou para a próxima sessão.
 - F14 medida: nas sessões 1 a 3, o formatador formatou o que 15 comandos de terminal escreveram.
   Efeito colateral: na sessão 3, um arquivo escrito pelo terminal no cap. 7, antes da correção, foi

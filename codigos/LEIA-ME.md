@@ -19,7 +19,7 @@ agente trabalhou, e as mensagens são as dele. A F4 (aviso de vaga) continua com
 
 Antes, desfaça a instalação provisória dos capítulos anteriores: os links das skills e dos
 agentes em `~/.claude/`, e a chave `hooks` do seu `~/.claude/settings.json` (os hooks passam a vir
-do plugin, e em dobro eles rodariam duas vezes). Depois:
+do plugin; deixados nas configurações, rodariam duas vezes). Depois:
 
 ```bash
 cd ~/meu-harness/mcp/api-local && npm ci && cd ../..
