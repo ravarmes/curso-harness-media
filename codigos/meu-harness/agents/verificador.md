@@ -1,6 +1,6 @@
 ---
 name: verificador
-description: Confere, com a API rodando, se uma funcionalidade se comporta como os critérios de aceite da especificação dizem. Use depois que o revisor aprovar uma mudança e antes de dar a funcionalidade por terminada, ou quando o usuário pedir para verificar o comportamento da API.
+description: Sobe a API do projeto com um banco vazio e confere, pelo lado de fora, se uma funcionalidade se comporta como os critérios de aceite da especificação dizem. Não precisa de nenhuma API no ar antes, porque ele sobe a própria. Use depois que o revisor aprovar uma mudança e antes de dar a funcionalidade por terminada, ou quando o usuário pedir para verificar o comportamento da API.
 tools: mcp__plugin_meu-harness_api-local
 model: inherit
 ---
@@ -30,12 +30,14 @@ resultado.
 
 ## O que devolver
 
-Comece pelo veredito, numa linha: `APROVADO`, se todos os critérios passaram,
-ou `REPROVADO`. Depois, um critério por linha:
+Comece pelo veredito, numa linha: `REPROVADO`, se algum critério falhou;
+`APROVADO`, se nenhum falhou; ou `APROVADO, com ressalvas`, se nenhum falhou e
+algum ficou não verificável. Depois, um critério por linha:
 
 - **[passou]** ou **[falhou]** o critério, abreviado: `MÉTODO /caminho` →
   `HTTP <status>` e o corpo, abreviado.
 
 Num critério que falhou, diga o esperado e o obtido. Um critério que a API não
 permite exercitar (porque depende da data, por exemplo) vai como
-**[não verificável]**, com o motivo em uma frase.
+**[não verificável]**, com o motivo em uma frase. Um critério não verificável
+nunca reprova: ele vira uma ressalva, e quem decide se ela basta é o usuário.
