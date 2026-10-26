@@ -34,7 +34,7 @@ export function criarRepositorioAgenda(banco: DatabaseSync) {
   // Intervalos [inicio, fim): consulta que começa quando outra termina não se sobrepõe.
   const sobrepoe = (coluna: 'profissional_id' | 'paciente_id') =>
     banco.prepare(
-      `SELECT 1 FROM consultas WHERE ${coluna} = ? AND status = 'agendada' AND inicio_utc < ? AND fim_utc > ? LIMIT 1`,
+      `SELECT 1 FROM consultas WHERE ${coluna} = ? AND status = 'agendada' AND inicio_utc < ? AND fim_utc > ? AND id <> ? LIMIT 1`,
     );
   const doProfissional = sobrepoe('profissional_id');
   const doPaciente = sobrepoe('paciente_id');
@@ -46,11 +46,12 @@ export function criarRepositorioAgenda(banco: DatabaseSync) {
         .run(dados.paciente_id, dados.profissional_id, dados.inicio_utc, dados.fim_utc);
       return { id: Number(lastInsertRowid), ...dados, status: 'agendada' };
     },
-    profissionalOcupado(id: number, inicioUtc: string, fimUtc: string): boolean {
-      return doProfissional.get(id, fimUtc, inicioUtc) !== undefined;
+    // `ignorar`: id de uma consulta que não conta (a que está sendo remarcada).
+    profissionalOcupado(id: number, inicioUtc: string, fimUtc: string, ignorar = 0): boolean {
+      return doProfissional.get(id, fimUtc, inicioUtc, ignorar) !== undefined;
     },
-    pacienteOcupado(id: number, inicioUtc: string, fimUtc: string): boolean {
-      return doPaciente.get(id, fimUtc, inicioUtc) !== undefined;
+    pacienteOcupado(id: number, inicioUtc: string, fimUtc: string, ignorar = 0): boolean {
+      return doPaciente.get(id, fimUtc, inicioUtc, ignorar) !== undefined;
     },
     porId(id: number): Consulta | undefined {
       const linha = banco.prepare('SELECT * FROM consultas WHERE id = ?').get(id);
@@ -58,6 +59,9 @@ export function criarRepositorioAgenda(banco: DatabaseSync) {
     },
     cancelar(id: number): void {
       banco.prepare("UPDATE consultas SET status = 'cancelada' WHERE id = ?").run(id);
+    },
+    remarcar(id: number, inicioUtc: string, fimUtc: string): void {
+      banco.prepare('UPDATE consultas SET inicio_utc = ?, fim_utc = ? WHERE id = ?').run(inicioUtc, fimUtc, id);
     },
     registrarFalta(id: number): void {
       banco.prepare("UPDATE consultas SET status = 'faltou' WHERE id = ?").run(id);
